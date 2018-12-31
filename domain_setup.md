@@ -1,0 +1,6 @@
+### Compatibility with online crowdsourcing tools
+
+Our lab uses `Amazon Mechanical Turk` ("mturk") for crowdsourcing our experiments online. It is also possible to use the infrastructure above compatible with other crowdsourcing tools, but that wont be covered here. In order to make the above server- and client-side infrastructure compatibile with mturk, there are a few steps we have to take, which are covered in `domain_setup.md` . We've also provided tools to submit experiments to mturk, bonus workers, and compensate workers who encountered an error during the experiment. There are alternatives to mturk--as well as [other mturk management tools](https://github.com/longouyang/nosub). 
+
+
+First, we have to enable [https](https://https.cio.gov/faq/) encryption between our servers and third parties (this is a requirement from mturk to protect workers). To do this, we need to set up a Domain Name, route traffic from that site to our droplet, and set up an [SSL Certificate](https://www.globalsign.com/en/ssl-information-center/what-is-an-ssl-certificate/) for our server. Second, we ensure that our javascript-based experiment has the necessary objects to interface with mturk (which you may already familiar with if you've used mturk before). 

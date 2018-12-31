@@ -1,13 +1,19 @@
-### Welcome! 
+# Welcome! 
 
-This repo contains a step by step guide on how to setup and run behavioral experiments online. We start with some of the modern server-side tools some experimentalists might need (e.g. for hosting experiments on your own server, saving trial-by-trial data, enabling more sophisticated client-server interactions, etc.) and then integrate these tools with an online crowdsourcing tool we use in our lab. 
+This repo is designed for people interested in better utilizing server-side programming tools to run behavioral experiments online. This material will be especially well suited for people familiar with client-side programming (e.g. you already are comfortable creating javascript-based experiments) but want to gentle introduction to server-side programming (e.g. server seteup, node.js, DNS Registrars, ets.). While there are lots of reasons this might be helpful, in our experience it's essential in order to: 
 
-### Infrastructure overview 
+- Have more control over data collection--avoiding third parties entirely 
+- Enable more sophisticated client-server and client-client interactions 
+- Better redundancies to ensure workers are fairly compensated for their time
 
-1. **Server**: `node.js` runs on a digital ocean [droplet](https://www.digitalocean.com/docs/droplets/) for server-side processes
-2. **Database**: `mongoDB` us our server-side [databse](https://www.mongodb.com/what-is-mongodb)
-3. **Experiment**: `javascript` based experiments, with `jsPsych` examples
 
-### Compatibility with online crowdsourcing tools
+### Infrastructure/instructions overview 
 
-Our lab uses `Amazon Mechanical Turk` (or "mturk") for crowdsourcing our experiments online. In order to make the server- and client-side infrastructure above mturk compatibile, we walk through setting up a Domain Name and routing traffic to that site to your droplet. Additionally, we've provided tools to submit experiments to mturk, bonus workers, and compensate workers who encountered an error during the experiment. There are alternatives to mturk--as well as [other mturk management tools](https://github.com/longouyang/nosub). 
+In this folder the key instruction scripts are: 
+
+- **`server_setup.md`**: instructions for setting up a Digital Ocean [Droplet](https://www.digitalocean.com/docs/droplets/) and configuring `node.js` to manage server-side processes
+- **`mongo_setup.md`**: instructions for setting up `mongoDB` as our server-side [databse](https://www.mongodb.com/what-is-mongodb) and enabling the necessary protections
+- **`experiment_setup.md`**: contains a preconfigured `javascript` based experiment (implimented with `jsPsych`) which you can modify for your own needs
+- **`domain_setup.md`**: instructions to make the tools above compatible with a popular crowdsourcing tool, `Amazon's Mechanical Turk`, or "mturk" 
+
+The steps above require purchasing a [Digital Ocean Droplet](https://www.digitalocean.com/products/linux-distribution/ubuntu/), which requires a monthly fee (starting at $5.00 a month). If you are a member of an academic institution, it may also be possible to use server resources available to students. (If you know of free server resources, please let us know!) All of the other tools and scripts should be open-source and feely available. 
