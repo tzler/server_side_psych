@@ -1,9 +1,40 @@
-var _ = require('underscore');
-var fs = require('fs');
-//var path = require('path');
-//var mkdirp = require('mkdirp');
+'use strict';
 
-var sendPostRequest = require('request').post;
+// var _ = require('underscore');
+const _ = require('lodash');
+const bodyParser = require('body-parser');
+const express = require('express');
+const fs = require('fs');
+const mongodb = require('mongodb');
+const path = require('path');
+const sendPostRequest = require('request').post;
+const colors = require('colors/safe');
+const app = express();
+const MongoClient = mongodb.MongoClient;
+const port = 4000;
+const mongoCreds = require('./auth.json');
+const mongoURL = `mongodb://${mongoCreds.user}:${mongoCreds.password}@localhost:27017/`;
+const handlers = {};
+
+function log(text) {
+  console.log(makeMessage(text));
+}
+
+function error(text) {
+  console.error(makeMessage(text));
+}
+
+function failure(response, text) {
+  const message = makeMessage(text);
+  console.error(message);
+  return response.status(500).send(message);
+}
+
+function success(response, text) {
+  const message = makeMessage(text);
+  console.log(message);
+  return response.send(message);
+}
 
 var serve_file = function(req, res) {
   var file_name = req.params[0];
@@ -38,13 +69,13 @@ function get_previous_participation(worker_id, database, i_collection, resolve, 
     console.log('... searching through collection:', i_collection, 'for worker:', worker_id)
     // GET PARTICIPATION COUNT
     collection.find({'worker_id': worker_id}).count(function(err, results) {
-      if (err) { 
+      if (err) {
         console.log('error!')
       } else {
         // returns results with the promise
         console.log('... subject has participated in', results, 'trials')
         resolve(results)
-      } 
+      }
     })
   });
 }
@@ -52,8 +83,8 @@ function get_previous_participation(worker_id, database, i_collection, resolve, 
 function determine_set_size(){
 
   // loads previous history of set sizes, determines current set size, updates history file
- 
-  set_size_location = 'support/'  
+
+  set_size_location = 'support/'
   // load possible and history of set sizes
   var data = JSON.parse(fs.readFileSync( set_size_location + 'numbers.txt'))
   // determine position within possible based on history
@@ -68,22 +99,12 @@ function determine_set_size(){
 
 }
 
-function clear_history(){
-
-  // load possible and history of set sizes
-  var data = JSON.parse(fs.readFileSync('../support/numbers.txt'))
-  console.log('previous history:', data['actual'])
-  // update history of set sizes
-  data['actual'] = []
-  // save updated history
-  fs.writeFileSync('../support/numbers.txt',  JSON.stringify(data));
-  var updated_data = JSON.parse(fs.readFileSync('numbers.txt'))
-  console.log('current history:', updated_data['actual'])
-}
-
 module.exports = {
+  log, 
+  error, 
+  success, 
   serve_file,
   handle_duplicate,
-  get_previous_participation, 
-  determine_set_size, 
+  get_previous_participation,
+  determine_set_size,
 };
