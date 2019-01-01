@@ -44,5 +44,7 @@ Now that you're here, you should add a non-root user and configure apache on the
 
 ### Step 2: getting an SSL certificate
 
+Setting up a SSL certificate is straightforward through the [command line on your droplet](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-16-04), logged in as a non-root sudo user. 
 
-https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-16-04
+
+
