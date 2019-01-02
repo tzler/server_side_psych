@@ -24,23 +24,25 @@ if(argv.port) {
   console.log('no port specified: using 8880\nUse the --port flag to change');
 }
 
-try {
-  var privateKey  = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.key'),
-      certificate = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.crt'),
-      intermed    = fs.readFileSync('/etc/apache2/ssl/intermediate.crt'),
-      options     = {key: privateKey, cert: certificate, ca: intermed},
-      server      = require('https').createServer(options,app).listen(port_location),
-      io          = require('socket.io')(server);
-} catch (err) {
+//try {
+//  var privateKey  = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.key'),
+//      certificate = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.crt'),
+//     intermed    = fs.readFileSync('/etc/apache2/ssl/intermediate.crt'),
+//      options     = {key: privateKey, cert: certificate, ca: intermed},
+//     server      = require('https').createServer(options,app).listen(port_location),
+//      io          = require('socket.io')(server);
+//}// catch (err) {
   console.log("cannot find SSL certificates; falling back to http");
   var server      = app.listen(port_location),
       io          = require('socket.io')(server);
-}
+//}
 
 // INITIAL PROTOCOL
-app.get( '/*' , query_database_and_set_experimental_params_before_serving )
+//app.get( '/*' , query_database_and_set_experimental_params_before_serving )
 
-// app.get( '/*', just_serve_experiment)
+app.get( '/*', function(req, res) {
+  return utils.serve_file( req, res )} 
+)
 
 
 

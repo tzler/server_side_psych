@@ -23,11 +23,12 @@ var break_trials = [];
     for (i=1; i<11; i++) {break_trials.push(i*n_trials_between_break)}
 
 // set criteria for ending experiment
-$.ajax({ type: 'GET', url: supporting_info_location + 'numbers.txt', dataType: 'json',
-  			 success: function(json){ set_size = json; }, 
-         async: false})
+//$.ajax({ type: 'GET', url: supporting_info_location + 'numbers.txt', dataType: 'json',
+//  			 success: function(json){ set_size = json; }, 
+//         async: false})
 
-var n_classes = set_size['possible'][(set_size.actual.length  - 1) % set_size.possible.length] 
+//var n_classes = set_size['possible'][(set_size.actual.length  - 1) % set_size.possible.length] 
+var n_classes = 10
 // for the moment it's just fixed at ten classes per experiment 
 
 if (n_classes == undefined) { n_classes = 10; console.log('setting n_classes manually!') }
@@ -366,7 +367,7 @@ $('.resume').click(function() {
   experiment_running = true
 })
 
-var worker_id = GetWorkerId() 
+var worker_id = 0 //GetWorkerId() 
 
 // BEGIN EXPERIMENT 
 $('.begin').click(function() {

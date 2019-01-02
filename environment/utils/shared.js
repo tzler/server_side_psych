@@ -5,16 +5,12 @@ const _ = require('lodash');
 const bodyParser = require('body-parser');
 const express = require('express');
 const fs = require('fs');
-const mongodb = require('mongodb');
 const path = require('path');
 const sendPostRequest = require('request').post;
-const colors = require('colors/safe');
 const app = express();
-const MongoClient = mongodb.MongoClient;
 const port = 4000;
-const mongoCreds = require('./auth.json');
-const mongoURL = `mongodb://${mongoCreds.user}:${mongoCreds.password}@localhost:27017/`;
 const handlers = {};
+
 
 function log(text) {
   console.log(makeMessage(text));
@@ -50,6 +46,11 @@ var handle_duplicate = function(req, res) {
 };
 
 function get_previous_participation(worker_id, database, i_collection, resolve, reject){
+  
+  const mongodb = require('mongodb');
+  const MongoClient = mongodb.MongoClient;
+  const mongoCreds = require('./auth.json');
+  const mongoURL = `mongodb://${mongoCreds.user}:${mongoCreds.password}@localhost:27017/`;
 
   // CONNECT TO DATABASE
   const mongo_creds = require('../auth.json');
