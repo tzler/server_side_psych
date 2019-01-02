@@ -1,0 +1,103 @@
+h1 {
+  }
+
+body {
+  background-color: #C0C0C0}
+
+.instructions{
+}
+
+.instructions{
+  margin: auto; 
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 2px solid #4a1535; 
+  padding: 2% 2%; 
+  color: #4a1535;
+  margin-top: 5%; 
+  font-size: 100%; 
+  width:50%;
+  height:55%; 
+  z-index: -2; 
+  overflow-y:scroll; 
+}
+
+.welcoming{
+  font-size: 200%;;
+}
+
+.reward_meter{
+  border: 10px solid #C0C0C0;
+  color: black;
+  padding: 5px 5px;
+  text-align: center;
+  bottom: 0%;
+  position: absolute;
+  text-decoration: none;
+  font-size: 100%;
+  transition-duration: .3s;
+  margin-left: 50%;
+  outline:none;
+  transform: translateX(-50%);
+  display: none; 
+} 
+
+.border_for_sample_image {
+    outline: 1px dashed blue;
+    width:30%;
+    height: 30%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 200px; }
+
+.sample_screen{
+  text-align: center; 
+  transform: translateY(-50%)
+}
+
+.sample_image {
+}
+
+.button{
+  background-color: #4a1535;
+  border: none;
+  color: white;
+  padding: 15px 25px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 150%;
+  transition-duration: 1s;
+  cursor: pointer;
+}
+
+.button:hover{
+  background-color: #D7DCE1; color: #4a1535;}
+
+.exit_slide {
+  color: #4a1535;
+  font-size: 150%;
+  text-align: center;
+  margin-top: 10%;
+  display: none; }
+
+.submit_button{
+  background-color: #4a1535;
+  border: none;
+  margin-top: 5%;
+  color: white;
+  padding: 15px 25px;
+  text-align: center;
+  font-size: 125%;
+  transition-duration: 1s;
+  cursor: pointer;}
+
+.submit_button:hover{
+  background-color: #D7DCE1; color: #4a1535;}
+
+.window_error_message{
+  text-align: center;
+  font-size: 200%;
+  display:none;
+  margin-top: 5%;
+ 	z-index: -1; 
+	opacity: .5; 
+}

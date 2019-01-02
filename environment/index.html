@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <title>Experiment</title>
+  <meta charset="utf-8"/>
+  <!-- node relevantlibraries -->
+  <script type="text/javascript" src="../socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="../node_modules/paper/dist/paper-full.js"></script>
+  <!-- plotly for visualization of subject's learning curve --> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <!-- jquerie libraries -->
+  <script type="text/javascript" src="https://s3-us-west-2.amazonaws.com/subimagenet/helper_functions/jquery.min.js"></script>
+  <script type="text/javascript" src="https://s3-us-west-2.amazonaws.com/subimagenet/helper_functions/jquery-ui.min.js"></script>
+  <script src="https://code.jquery.com/jquery-1.8.0.min.js"></script>
+  <script src="https://requirejs.org/docs/release/2.3.5/r.js"></script>
+  <!--  custom css formatting -->
+  <link href="custom.css" media="screen" rel="stylesheet" type="text/css">
+</head>
+
+<body style='display:none'>
+  <div class='window_error_message'></div>  
+  <!-- instruction slide -->
+  <div class = 'instructions trial_info'>
+    <div id = 'instructions_slide_one'></div>
+    <button type='button' class="button begin" style="display:block; margin:auto">LET'S BEGIN</button></div>
+  </div>
+  <div id='break_slide' style='display:none; text-align:center' >
+    <p id='timer_message'></p>
+    <button class='button resume'>CLICK TO RESUME THE EXPERIMENT</button>
+  </div> 
+  <!-- experiment: instructions on match screen -->
+  <div id='main_experiment'> 
+    <!-- experiment: sample screen placeholder -->
+    <div class='sample_screen'> 
+      <img class='grid-item sample_image' style='display: none'>
+      
+    </div> 
+    <div class='reward_meter'></div>
+  </div> 
+  <!-- exit slide notification  -->
+  <div class=exit_slide><strong>Thanks so much, you're done!</strong>
+ 	<p style='text-align:center'>
+    <br>If you'd like to tell us anything about your experince with this HIT, feel free to write in the text box below.
+    <br> How did you figure it out--or why didn't you?
+    How did you decide what action to take for each new image?
+    <br>Any feedback you have is greatly appreciated! Just press "SUBMIT" when you're done.
+    <br><br>
+    <textarea id="worker_input" style='width:500px; height:100px'></textarea>
+  </p> 
+  
+  <!-- mturk compatability form --> 
+  <input type=hidden name='submit_data' id='submit_all_data'>
+  <form name="hitForm" id="hitForm" method="POST" action="">
+	  <input type="hidden" name="assignmentId" id="assignmentId" value="">
+	  <input type='submit' name='submitButton' id='submitButton' value='Submit' class='submit_button'>
+  </form>
+</body>
+
+<!--  custom javascript functions -->
+<script src='functions.js'></script>
+
+</html>

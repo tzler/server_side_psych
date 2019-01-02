@@ -1,6 +1,5 @@
 // TO DO: 
-// set up node 
-// set up mongo 
+// - set up SSL certificates for snail server 
 
 global.__base = __dirname + '/';
 
