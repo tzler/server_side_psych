@@ -1,6 +1,19 @@
 # Welcome! 
 
-This repo is designed for anyone interested in using server-side tools to run human behavioral experiments online. We provide template functions in `node.js` that should be easy to integrate into any javascript based experiments, and walk through the prerequisites for integrating these tools with an online crowdsouring platforms; setting up a server, domain name registration and routing, standard security protocols, et cetera.  
+This repo is designed for anyone interested in using server-side tools to run human behavioral experiments online. We provide template functions that should be easy to integrate into any javascript-based experiments you already have, and walk through the prerequisites for integrating these tools with an online crowdsouring platforms; setting up a server, domain name registration and routing, standard security protocols, et cetera.  
+
+A general outline of the tools we use in this tutorial: 
+
+
+- **`javascript`**: browser-based implimentation of our experiment
+- **`node.js`**: our "backend", manages client-server interactions 
+- **`mongodb`**: NoSQL database for data storage
+- **`jupyter notebooks`**: a python-based interface for data retreival 
+- **`Apache HTTP Server`**: manages web-server interface
+- **`Digital Ocean "droplet"`**: cloud computing resource 
+- **`Amazon Mechanical Turk (mturk)`**: online crowdsourcing platform
+
+These are among the most popular, scalable, open source tools available for this task. They all have great documentation (minus mturk :unamused:), are supported by thriving communities, and will certainly proves useful if you're hoping to continue this work--trust us **:)** 
 
 These tools might be helpful if you're interested in:  
 
@@ -15,17 +28,6 @@ This tutorial centers on a single use case; directing an online crowdsourcing to
 
 1. It's useful for most experimentalists: we're able to circumvent the need for third parties, getting around the restrictive data limitations often imposed by crowdsourcing tools (e.g. limited file size), and format the data in a way that's well suited for it's end use. 
 2. It's a good foundation: all of the infrastructure and know-how we may need for more sophisticated client-server processes build from this simple use case, which requires knowledge about DNS routing, web security, client-server interactions, and server-side programming. 
-
-A general outline of the tools we use in this tutorial: 
-
-- **`javascript`**: browser-based implimentation of our experiment
-- **`node.js`**: our "backend", manages client-server interactions 
-- **`Apache HTTP Server`**: manages web-server interface
-- **`Digital Ocean "droplet"`**: cloud computing resource 
-- **`mongodb`**: database for data storage
-- **`jupyter notebooks`**: a friendly python-based interface for data retreival 
-
-These are among the most popular, scalable, open source tools available for this task. They all have great documentation, are supported by thriving communities, and will certainly proves useful if you're hoping to continue this work--trust us **:)** 
 
 ### Instructions for each step along the way
 
