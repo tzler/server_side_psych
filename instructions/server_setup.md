@@ -49,12 +49,7 @@ Now let's
 
 # Installing `mongodb`
 
-
 https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubuntu-18-04
-
-
-
-
 
 
 
@@ -66,4 +61,4 @@ Now modify this and enter it into your browser:
 
 	http://YOUR.IP.ADDRESS:8881/index.html
 
-Great! Now the main server-side dependencies we need are in place. 
+#### Great! Now the main server-side dependencies we need are in place. 
