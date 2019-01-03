@@ -1,31 +1,33 @@
-# Welcome! 
+## Welcome! 
 
-This repo is designed for anyone interested in using server-side tools to run behavioral experiments online. We walk through the basics of server seteup, domain name registration and routing, as well as enabling standard security protocols, and provide template server-side functions in `node.js` that should be easy to integrate into any javascript based experiments. 
+This repo is designed people interested in using server-side tools to run human behavioral experiments online. We provide template functions in `node.js` that should be easy to integrate into any javascript based experiments, and walk through the prerequisites for integrating these tools with an online crowdsouring platforms; setting up a server, domain name registration and routing, as enabling standard security protocols, et cetera.  
 
-In our experience, using these server-side tools has been essential in order to: 
+These tools might be helpful if you're interested in:  
 
-- Have more control over data collection--avoiding third parties entirely 
-- Enable more sophisticated in-experiment data processing and client-client interactions 
-- Ensure workers are fairly compensated for their time
+- Having more control over data collection by avoiding third party constraints 
+- Enabling within-experiment data processing that's too intensive for a browser
+- Enabling multi-agent (e.g. client-client) interactions 
+- Ensure workers are fairly compensated for their time by enabling better reduncancies
 
-# Our (pedagogial and technical) approach
+### This is an experiment-oriented introduction to client-server programming
 
-This tutorial centers on a single use case; saving trial-by-trial data onto database, which is housed on the server running our experiment. We chose this starting point for two reasons:
+This tutorial centers on a single use case; directing an online crowdsourcing tool to our server, where an experiment is running, then saving data into a server-side database as it comes in, trial by trial. We chose this starting point for two main reasons:
 
-1. This is a useful ability for most experimentalists; it circumvents the need for third parties, getting around some of the restrictive data limitations imposed by crowdsourcing tools (e.g. file size), and gives us more control over the format of the data. 
-2. It also serves as a basic starting point for building all of the infracture and know-how we may need for more sophisticated server-side processes down the line; DNS routing, client-server interactions, server-side programming, and web security. 
+1. It's useful for most experimentalists: we're able to circumvent the need for third parties, getting around the restrictive data limitations often imposed by crowdsourcing tools (e.g. limited file size), and format the data in a way that's well suited for it's end use. 
+2. It's a good foundation: all of the infracture and know-how we may need for more sophisticated client-server processes build from this simple use case, which requires knowledge about DNS routing, web security, client-server interactions, and server-side programming. 
 
-Starting from a `javascript` implimentation of a browser-based experiment, we use 
+A general outline of the tools we use in this tutorial: 
 
-- `node.js`: our "backend", manages client-server interactions 
-- `Apache HTTP Server`: manages web-server interface
-- `Digital Ocean "droplet"`: cloud computing resource 
-- `mongodb`: database for data storage and retrieval
+- **`javascript`**: browser-based implimentation of our experiment
+- **`node.js`**: our "backend", manages client-server interactions 
+- **`Apache HTTP Server`**: manages web-server interface
+- **`Digital Ocean "droplet"`**: cloud computing resource 
+- **`mongodb`**: database for data storage
+- **`jupyter notebooks`**: a friendly python-based interface for data retreival 
 
-These are among the most popular, scalable, open source tools available for this task. They all have great documentation and will certainly proves useful if you hope to work in this space in the future. 
+These are among the most popular, scalable, open source tools available for this task. They all have great documentation, supporting by thriving communities, and will certainly proves useful if you're hoping to continue this work--trust us **:)** 
 
-
-### `Instructions/` 
+### `Instructions/`
 
 There are step by step guides on each of the following: 
 
@@ -34,10 +36,9 @@ There are step by step guides on each of the following:
 - **`security_setup.md`**: enabeling standard security protocols 
 - **`experiment_setup.md`**: server-side functions in interface with `javascript` based experiments
 
-### Code 
+### `experiment/`
 
-
-- **`experiment/`**: all relevant `node` and `javascript` scripts for running an experiment on your server
+All relevant `node` and `javascript` scripts for running an experiment on your server
 
 
 The steps above require purchasing a [Digital Ocean Droplet](https://www.digitalocean.com/products/linux-distribution/ubuntu/), which requires a monthly fee (starting at $5.00 a month). If you are a member of an academic institution, it may also be possible to use server resources available to students. (If you know of free server resources, please let us know!) All of the other tools and scripts should be open-source and feely available. 
