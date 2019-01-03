@@ -39,12 +39,18 @@ Now that you're here, you should add a non-root user and configure apache on the
 
 
 
-. . . 
+. . .
 
 
 ### Step 2: getting an SSL certificate
 
-Setting up a SSL certificate is straightforward through the [command line on your droplet](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-16-04), logged in as a non-root sudo user. 
+Setting up a SSL certificate is straightforward through the [command line on your droplet](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-18-04), logged in as a non-root sudo user. 
+
+
+### Step 3: configuring your server's firewall 
+
+
+In order to use ... Set up [apache](https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-18-04)
 
 
 
