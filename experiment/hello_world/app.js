@@ -1,17 +1,26 @@
+// SETUP MODULES 
+//
 // npm install express
-var express = require('express');
-var fs = require('fs')
-// an instance of express 
-var app = express();
-// the port we'll use
-var port_location = 8884;
+const express = require('express');
+// built in 'file system' operations
+const fs = require('fs')
+// express instance--'app' is the convention 
+const app = express();
 
+// SETUP MONGO AND SSL TRAFFIC PERMISSIONS
+//
+// firewall permitted port we'll use
+const port_location = 8889;
+// location of ssl and mongo credentials
+const credentials = 'credentials/'
 // extract relevant info from SSL key and certification
 const options = {
-	key:  fs.readFileSync("privatekey"), 
-	cert: fs.readFileSync("certificate")
+	key:  fs.readFileSync(credentials + "ssl_privatekey"), 
+	cert: fs.readFileSync(credentials + "ssl_certificate")
 };
 
+// SETUP SERVER-SIDE OPERATIONS 
+// 
 // setup server-side port using credentials 
 const server = require('https').createServer(options,app)
 		
@@ -24,5 +33,5 @@ server.listen(port_location, function() {
 // listen to incoming requests
 app.get('/', function (req, res) {
   // client response protocol
-  res.send("Hello World!");
+  res.send("hello world!");
 });
