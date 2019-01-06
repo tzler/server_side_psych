@@ -28,4 +28,6 @@ Enter the following in your browser:
 http://<your_domain_name>:<port_number>
 ```
 
-where `<your_domain_name>` is the full domain name you purchased (with the extension, e.g. cutename.com) and `<port_number>` is `8888`. You should see `Hello World!` printed out in your browser `:D` 
+where `<your_domain_name>` is the full domain name you purchased (with the extension, e.g. cutename.com) and `<port_number>` is `8888`. 
+
+You should see `Hello World!` printed out in your browser `:D` 
