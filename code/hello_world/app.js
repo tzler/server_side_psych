@@ -13,7 +13,7 @@ const assert = require('assert');
 
 // SETUP TRAFFIC PERMISSIONS (MONGO/HTTPS/firewall)
 // firewall permitted port we'll use
-const external_port = 8889;
+const external_port = 8888;
 // location of ssl and mongo credentials
 const credentials = 'credentials/'
 // extract relevant info from SSL key and certification

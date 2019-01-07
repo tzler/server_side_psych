@@ -4,9 +4,9 @@ This is a bare bones example that utilizes all of the server side infrastructure
 
 You'll need to create a folder in this directory called `credentials` that has three json files you've created throughout the set up process: 
 
-- ***`mongo_keys`***: contains the user and password you set to secure mongodb 
-- ***`ssl_certificate`***: the ssl certificate you generated to enable https 
-- ***`ssl_privatekey`***: the ssl private key you generated to enable https 
+- `mongo_keys`: contains the user and password you set to secure mongodb 
+- `ssl_certificate`: the ssl certificate you generated to enable https 
+- `ssl_privatekey`: the ssl private key you generated to enable https 
 
 You'll also need to make sure you have `port 8888` enabled in your firewall. 
 
@@ -22,9 +22,9 @@ Install the modules we'll need:
 npm install express mongodb
 ```
 
-This will create a folder `node_modules` in this directory as well as a `package-lock.json` file. Check them out when you have time. 
+This will create a folder `node_modules` in this directory as well as `package.json` and `package-lock.json` files. Check them out when you have time. 
 
-Run the file we've given a standard node name: 
+Run the main node executable, (which we've named following the standard convention): : 
 
 ```
 node app.js
