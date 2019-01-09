@@ -2,7 +2,7 @@
 
 This is a bare bones example that utilizes all of the server side infrastructure we've been developing. It's a good place to start if you need to troubleshoot your setup or try to understand what's going on under the hood. Generally: 
 
-- `index.html`: the 'langing page' you'll direct the server to--contains instructions and formatting
+- `index.html`: the 'landing page' you'll direct the server to--contains instructions and formatting
 - `app.js`: node functions that mangage server-client interactions, and server-server interactions (e.g. mongo queries)
 - `functions.js`: javascript functions that link html elements (e.g. buttons, text fields) with node sockets
 
