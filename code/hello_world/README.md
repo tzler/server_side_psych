@@ -39,14 +39,14 @@ You should see the following line printed on the console: `Example app listening
 Enter the following in your browser:
 
 ```
-http://<your_domain_name>:<port_number>:/index.html
+https://<your_domain_name>:<port_number>:/index.html
 ```
 
 where `<your_domain_name>` is the full domain name you purchased (with the extension, e.g. cutename.com) and `<port_number>` is `8888`. 
 
 In your browser, you should be able to enter text onto the server, then extract random entries: 
 
-![hello_world_langing_page](README.png)
+![hello_world_langing_page](langing_page.png)
 
 For the moment I've disabled the mongo authentification process (ERR otherwise). To revert back to a more secure mongo protocol, uncomment these lines in `/etc/mongo.conf`
 
