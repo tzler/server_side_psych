@@ -8,21 +8,21 @@
   </head>
 
   <body style='text-align: center'>
-    <div style='transform: translateY(0%);'>
+    <div>
     <!-- cute Hello World image :) -->  
-      <div style='margin: 5%'> 
-        <h3>Insert Option</h2>
-        <p>Write something out into the text box:</p>
+      <div style='margin: 3%'> 
+        <h3>Insert comment into server side database</h2>
+        <p>Write in the text box:</p>
         <p><input type="text" id="text_input" size="75 em"></p>
         <p>
           <button onclick="mongo_insert()">Click to insert text into the server side database</button>
         </p>
       </div>
-     <div style="width:20%; margin:0 auto">
+     <div style="width:30%; margin:auto auto">
       <img src='https://openclipart.org/image/2400px/svg_to_png/190952/Hello-World.png' style="width:100%">
     </div> 
-     <div style="margin:5%">
-        <h3>Retreive Option</h3>
+     <div style="margin:3%">
+        <h3>Retrieve JSON object from server side database</h3>
         <p id='db_return'>:::</p>
         <p>
           <button onclick="mongo_extract()">Click to retrieve from the server side database</button>
