@@ -2,3 +2,5 @@ credentials/
 node_modules/
 package-lock.json
 package.json
+*.swp
+

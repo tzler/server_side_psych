@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <title>Hello World!</title>
+    <script src="/socket.io/socket.io.js"></script> <!-- https://socket.io/get-started/chat/ --> 
+    <script src='functions.js'></script>
+  </head>
+
+  <body style='text-align: center'>
+    <div style='transform: translateY(0%);'>
+    <!-- cute Hello World image :) -->  
+      <div style='margin: 5%'> 
+        <h3>Insert Option</h2>
+        <p>Write something out into the text box:</p>
+        <p><input type="text" id="text_input" size="75 em"></p>
+        <p>
+          <button onclick="mongo_insert()">Click to insert text into the server side database</button>
+        </p>
+      </div>
+     <div style="width:20%; margin:0 auto">
+      <img src='https://openclipart.org/image/2400px/svg_to_png/190952/Hello-World.png' style="width:100%">
+    </div> 
+     <div style="margin:5%">
+        <h3>Retreive Option</h3>
+        <p id='db_return'>:::</p>
+        <p>
+          <button onclick="mongo_extract()">Click to retrieve from the server side database</button>
+        </p>
+      </div>
+    </div> 
+  
+  </body>
+</html>
