@@ -46,7 +46,7 @@ where `<your_domain_name>` is the full domain name you purchased (with the exten
 
 In your browser, you should be able to enter text onto the server, then extract random entries: 
 
-![hello_world_langing_page](langing_page.png)
+![hello_world_langing_page](landing_page.png)
 
 For the moment I've disabled the mongo authentification process (ERR otherwise). To revert back to a more secure mongo protocol, uncomment these lines in `/etc/mongo.conf`
 

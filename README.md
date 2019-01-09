@@ -22,7 +22,8 @@ We chose this approach for two reasons:
 1. **It's useful**: you'll be able toget around restrictive data limitations often imposed by crowdsourcing tools (e.g. limited file size), and format the data in a way that's well suited for it's end use--all in a secure, easy to access location suitable for long-term storage.
 2. **It's extensible**: all of the infrastructure and know-how you may need for more sophisticated client-server processes build on this simple use case (DNS, web security, CRUD operations, etc.)  
 
-### Getting started :egg: :hatching_chick: :hatched_chick: 
+### :egg::hatching_chick::hatched_chick: Getting started 
+
 There are step by step guides to setting up a fully functional experimental server in **`instructions/`**. All the relevant node and javascript code you'll you'll need are in **`experiment/`**; an example experiment that works as soon as you follow the instructions, and a detailed guied on how to adapt your own experiments to incorporate the same functions. 
 
 We'll go through each step you need to get started, but not the background you'll need to understand everything. For that, we'll try to provide helpful links and leave the rest up to you **:)**
