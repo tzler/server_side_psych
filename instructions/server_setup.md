@@ -1,3 +1,12 @@
+1. initialize a droplet
+2. user seteup 
+3. install dependencies
+	- `node` 
+	- `apache` 
+	- **TODO**: `mongodb` 
+4. generate SSL certificate
+	- need a better way to give permissions to user for cert and key
+
 # Initial `Digital Ocean` server setup
 
 [ -- website info -- ] 
@@ -14,14 +23,14 @@ It takes a minute to initialize and then you'll get an email which has two piece
 
 ```
 Droplet Name: your_droplet_name
-IP Address: YOUR.IP.ADDRESS  # 68.183.167.134
+IP Address: SERVER.IP.ADDRESS  # 68.183.167.134
 Username: root
 Password: yOuRPasSWoRD 
 ```
 
 With this information, you want go to the command line you want to enter 
 
-```ssh root@YOUR.IP.ADDRESS```
+```ssh root@SERVER.IP.ADDRESS```
 
 Say `yes` and paste `yOuRPasSWoRD` after copying it from the email, then follow the instructions  to create a new password. Once you're on the server follow these [steps](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04) to set up a non-root sudo user. 
 
@@ -49,16 +58,25 @@ Now let's
 
 # Installing `mongodb`
 
-https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubuntu-18-04
+First, [set up the database](https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubuntu-18-04) and then [secure it](https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-mongodb-on-ubuntu-16-04#part-three-configuring-remote-access-(optional)) with password protection and firetawall permissions. 
 
+Throughout this process, you want to hold onto the `user` and `pwd` values you set. Once you're done, create a simple text file in `credentials/` called ` mongo_admin` that has the following information and json format: 
 
-
+```
+{
+	"user": "<your_user_name>",
+	"pwd": "<yOur_pASswORd>"
+}
+```
 # Experiment dry run
 
 	node app.js --port 8881
 
 Now modify this and enter it into your browser: 
 
-	http://YOUR.IP.ADDRESS:8881/index.html
+	http://SERVER.IP.ADDRESS:8881/index.html
 
-#### Great! Now the main server-side dependencies we need are in place. 
+#### Great! Now the main server-side dependencies we need are in place.
+
+
+https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-18-04#step-5-%E2%80%94-setting-up-virtual-hosts-recommended

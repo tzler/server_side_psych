@@ -20,9 +20,7 @@ In order to manage your DNS records with digital ocean, first you need to tell y
 
 ### Step 1.3: Configuring your Digital Ocean droplet
 
-[Add your domain name to your droplet](https://www.digitalocean.com/docs/networking/dns/how-to/add-domains/) so that you can manage you DNS records on Digital Ocean. Once you've done this, [set an A record](https://www.digitalocean.com/docs/networking/dns/how-to/manage-records/) using DigitalOcean DNS. If you only have one domain name configured, just set the host name with an '@', like this: 
-
-<img src='support/digital_ocean_domain_setup4.png' style="width:40%">
+[Add your domain name to your droplet](https://www.digitalocean.com/docs/networking/dns/how-to/add-domains/) so that you can manage you DNS records on Digital Ocean. Once you've done this, [set up two A records](https://www.digitalocean.com/docs/networking/dns/how-to/manage-records/) using DigitalOcean DNS. First set the host name with an '@' (which will give you `yourdomainname.com`) in the first box, then paste the IP address of your server in the second box. Second, set the host name in the first box with `www.` (which will give you `www.yourdomainname.com`) and enter the same IP address in the second box. 
 
 Once you've made these updates, it make take a minute for everything to register. Before moving on, check to make sure this worked. You'll be able to ssh into your droplet using the domain name; where you had to type in something like this before (and this still works): 
 	
@@ -30,7 +28,7 @@ Once you've made these updates, it make take a minute for everything to register
 	
 now you'll be able to do it like this: 
 	
-	ssh root@stanfordneuroailab.com	
+	ssh root@yourdomainname.com
 
 Now that you're here, you should add a non-root user and configure apache on the server, in that order: 
 
@@ -47,10 +45,50 @@ Now that you're here, you should add a non-root user and configure apache on the
 Setting up a SSL certificate is straightforward through the [command line on your droplet](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-18-04), logged in as a non-root sudo user. 
 
 
+Be judicious using there, as there's a per-week limit: https://letsencrypt.org/docs/rate-limits/
+
 ### Step 3: configuring your server's firewall 
 
+When we run experiments, we're going to direct people to specific ports (e.g. `https://cutename:8888`) so we need to give people access to them in the firewall. 
+
+
+```
+sudo ufw allow 8888
+```
+
+Or if we want a range: 
+
+```
+sudo ufw allow 8880:8889/tcp
+```
+
+
+Running the following command 
+
+```
+sudo ufw status numbered
+```
+
+should output: 
+
+```
+Status: active
+
+     To                         Action      From
+     --                         ------      ----
+[ 1] OpenSSH                    ALLOW IN    Anywhere
+[ 2] Apache Full                ALLOW IN    Anywhere
+[ 3] 8880:8889/tcp              ALLOW IN    Anywhere
+[ 4] OpenSSH (v6)               ALLOW IN    Anywhere (v6)
+[ 5] Apache Full (v6)           ALLOW IN    Anywhere (v6)
+[ 6] 8880:8889/tcp (v6)         ALLOW IN    Anywhere (v6)
+```
 
 In order to use ... Set up [apache](https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-18-04)
 
+
+#### configuring node to run via https
+
+https://www.sitepoint.com/how-to-use-ssltls-with-node-js/
 
 
