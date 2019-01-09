@@ -66,7 +66,7 @@ io.on('connection', function (socket) {
 });
 
 var db_insert = function(text_data) {
-  mongo_client.connect(mongo_url, function(err,client) {
+  mongo_client.connect(mongo_url, { useNewUrlParser: true }, function(err,client) {
     // make sure we didn't throw an error
     assert.equal(null, err);
     // inputs are JSON objects, not a string like we extracted
