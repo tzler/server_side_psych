@@ -1,8 +1,6 @@
-# Compatibility with online crowdsourcing tools
+# `Domain name setup`
 
-Our lab uses **`Amazon Mechanical Turk`** ("mturk") for crowdsourcing our experiments online. In order to make our server-side infrastructure compatibile with mturk, we have to enable [https](https://https.cio.gov/faq/) encryption between our servers and third parties. We'll do this in two steps. First, we need to set up a domain name. Second, we need to set up a [SSL Certificate](https://www.globalsign.com/en/ssl-information-center/what-is-an-ssl-certificate/) for our server. This is all to protect the privacy of people who are participating in our studies. 
-
-What we'll also do is enable our firewall so that traffic on our server only flows through the appropriate channels; we'll enable ports that will be used for routing the domain name to the server, and giving them access to the experiment, as well as connecting the mongo database. 
+The main purpose of this section is to ensure that your server is compatibile with online crowdsourcing tools. Our lab uses **`Amazon Mechanical Turk`** ("mturk"), and in order to make this server-side infrastructure compatibile with mturk we have to enable [https](https://https.cio.gov/faq/) encryption between our servers and third parties. To enable https, first, we need to set up a domain name, then go through the appropriate steps to secure it. 
 
 ### A general outline of the steps at this stage: 
 
@@ -10,17 +8,14 @@ What we'll also do is enable our firewall so that traffic on our server only flo
 2. Route the domain name to your server's IP address with DNS
 3. Manage your domain name's DNS records with Digital Ocean
 4. Install and configuring `Apache` to manage the domain name traffic
-5. Get an SSL certification to enable https 
-6. Configure your server's firewall 
-7. Configure node to run via https
 
-### 1: Get a domain name
+### 1) Get a domain name
 
 A domain name is just a human readable pointer to some location on the internet. For example, `google.com` is a more legible version of it's Internet Protocol (IP) address, `172.217.6.206`, but a web browser understands them both just fine. Your droplet already has an IP address. So you just need to find a domain name and then route visitors from that domain name to your server, like google does. 
 
 We've used [namecheap](https://www.namecheap.com/), but you can use whatever providor you like--[freenom](https://www.freenom.com/en/index.html) is free, but we haven't tested it. 
 
-### 2: Route your domain names to your IP addresses
+### 2) Route your domain names to your IP addresses
 
 DNS (**`Domain Name System`**) is a naming system that maps a server's domain name, like `google.com`, to an IP address, like `172.217.6.206`. **`Registrars`** are organizations that have completed some accreditation process that allows them to sell domain names (e.g. Namecheap). Once you've purchased a domain name, you can manage your DNS records with other providers (e.g. digital ocean). 
 
@@ -30,7 +25,7 @@ In order to manage your DNS records with digital ocean, first you need to tell y
 - ns2.digitalocean.com
 - ns3.digitalocean.com
 
-### 3: Configure your Digital Ocean droplet
+### 3) Configure your Digital Ocean droplet
 
 [Add your domain name to your droplet](https://www.digitalocean.com/docs/networking/dns/how-to/add-domains/) so that you can manage you DNS records on Digital Ocean. Once you've done this, [set up two A records](https://www.digitalocean.com/docs/networking/dns/how-to/manage-records/) using DigitalOcean DNS. First set the host name with an '@' (which will give you `yourdomainname.com`) in the first box, then paste the IP address of your server in the second box. Second, set the host name in the first box with `www.` (which will give you `www.yourdomainname.com`) and enter the same IP address in the second box. 
 
@@ -44,7 +39,7 @@ now you'll be able to do it like this:
 
 Alternatively, it might be that you need to use `root@www.yourdomainname.com`
 
-### 4: Install and configure **`Apache`**
+### 4) Install and configure **`Apache`**
 
 Set up [apache](https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-18-04) and make sure entering your domain name into the browser redirects you to your server. 
 

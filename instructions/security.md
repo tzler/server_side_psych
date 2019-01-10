@@ -1,4 +1,14 @@
-### Get an SSL certificate
+# `security setup`
+
+
+Now that you have a domain name that is routed to your server, we need to set up an [SSL Certificate](https://www.globalsign.com/en/ssl-information-center/what-is-an-ssl-certificate/) in order to enable https. This is all to protect the privacy of people who are participating in our studies. What we'll also do in this section is configure our firewall so that traffic on our server only flows through the appropriate channels; we'll enable ports that will be used for routing the domain name to the server, and giving them access to the experiment, as well as connecting the mongo database.
+
+### A general outline of the steps at this stage: 
+1. Get an SSL certification to enable https 
+2. Configure your server's firewall 
+3. Configure node to run via https
+
+### 1) Get an SSL certificate
 
 Setting up a SSL certificate is straightforward through the [command line on your droplet](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-18-04), logged in as a non-root sudo user. Be judicious using there, as there's a [per-week limit](https://letsencrypt.org/docs/rate-limits/). 
 
@@ -13,7 +23,7 @@ Verirify this, make a copy of each of these file and put it in the same `credent
 - **`ssl_privatekey`**
 
 
-### Configure your server's firewall 
+### 2) Configure your server's firewall 
 
 When we run experiments, we're going to direct people to specific ports (e.g. `https://cutename:8888`) so we need to give people access them across the firewall. For a single port, we could run `sudo ufw allow 8888`. But because we want a range we'll enter: 
 
@@ -49,7 +59,7 @@ Apache Full (v6)           ALLOW       Anywhere (v6)
 8880:8889/tcp (v6)         ALLOW       Anywhere (v6)
 27017 (v6)                 ALLOW       Anywhere (v6)
 ```
-### Configure node to incorporate these authentification keys
+### 3) Configure node to incorporate these authentification keys
 
 Now that we've set up all these security protocols, we need to ensure that the node has permission to operate within them; running default http ports here, for example, would just result in an error. That is, node needs to be able to tell the server (firewall, apache, etc.) that it has permission to to operate freely. 
 
