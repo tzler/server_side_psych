@@ -5,10 +5,18 @@ socket = io.connect();
 function mongo_insert(){
   // extract client side text input
   var text_input = document.getElementById('text_input').value
-  // log in browser 
-  console.log('client side text input received:\n', text_input)
-  // send to node which is listening for 'insert' and data
-  socket.emit('insert', text_input)
+  // check that there was something written
+  if (text_input.length > 0) {
+    // send data to server which is listening for 'insert'
+    socket.emit('insert', text_input)
+    // log in browser 
+    console.log('client side text input received:\n', text_input)
+    // clear text input
+    document.getElementById('text_input').value = ''
+  } else { 
+    // client side console log 
+    console.log('not sending empty text')
+  }
  }
 
 // click from index.html calls 'mongo_extract()'
