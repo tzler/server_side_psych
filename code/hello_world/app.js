@@ -28,7 +28,7 @@ const io = socket_io(server)
 const db_key = JSON.parse(fs.readFileSync(credentials + 'mongo_keys')); 
 // construct string from port and authentification data
 const mongo_url = `mongodb://${db_key.user}:${db_key.pwd}@localhost:27017`;
-// console.log('mongo_url:', mongo_url)
+console.log('mongo_url:', mongo_url)
 
 // DEFINE SERVER SIDE PORT OPERATIONS
 // open port on the serverd 
@@ -47,10 +47,10 @@ app.get('/*', function (req, res) {
 var serve_file = function(req, res) {
   // extract name of file requested
   var file_name = req.params[0];
+   // server side console log
+  console.log('\t :: Express :: file requested: ' + file_name);
   // return file to client
   return res.sendFile(file_name, {root: __base});
-  // server side console log
-  console.log('\t :: Express :: file requested: ' + file_name);
 };
 
 // set up connection to listen for client

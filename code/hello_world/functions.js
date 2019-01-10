@@ -11,8 +11,10 @@ function mongo_insert(){
     socket.emit('insert', text_input)
     // log in browser 
     console.log('client side text input received:\n', text_input)
+    // clear text input
+    document.getElementById('text_input').value = ''
   } else { 
-    // client side console log
+    // client side console log 
     console.log('not sending empty text')
   }
  }

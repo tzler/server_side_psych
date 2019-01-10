@@ -17,7 +17,7 @@ You'll also need to make sure you have `port 8888` enabled in your firewall.
 Once you have these requirements met, initialize the `node` modules in this folder with `npm`:
 
 ```  
-user@server$ npm init --yes # initialize and accept all defaults
+$ npm init --yes # initialize and accept all defaults
 ```
 
 Install the modules we'll need: 
@@ -49,7 +49,7 @@ In your browser, you should be able to enter text onto the server, then extract 
 ![hello_world_langing_page](landing_page.png)
 
 
-If you open the inspector in your browser (e.g. [Firefox](https://developers.google.com/web/tools/chrome-devtools/console/) or [Chrome](https://developers.google.com/web/tools/chrome-devtools/console/) you can see the client side operations printed out in the console.
+If you open the inspector in your browser (e.g. [Firefox](https://developers.google.com/web/tools/chrome-devtools/console/) or [Chrome](https://developers.google.com/web/tools/chrome-devtools/console/)) you can see some of the client side operations printed out in the console.
 
 
 ### tmp notes
