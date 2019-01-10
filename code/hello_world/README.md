@@ -51,17 +51,3 @@ In your browser, you should be able to enter text onto the server, then extract 
 
 If you open the inspector in your browser (e.g. [Firefox](https://developers.google.com/web/tools/chrome-devtools/console/) or [Chrome](https://developers.google.com/web/tools/chrome-devtools/console/)) you can see some of the client side operations printed out in the console.
 
-
-### tmp notes
-For the moment I've disabled the mongo authentification process (ERR otherwise). To revert back to a more secure mongo protocol, uncomment these lines in `/etc/mongo.conf`
-
-```
-29 #security:
-30 #  authorization: "enabled"
-```
-
-and restart the database with 
-
-```
-$ sudo systemctl restart mongod
-```
