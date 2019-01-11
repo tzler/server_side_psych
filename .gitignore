@@ -4,3 +4,4 @@ package-lock.json
 package.json
 *.swp
 jsPsych/
+.DS_Store

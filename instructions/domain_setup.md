@@ -1,14 +1,21 @@
-# Compatibility with online crowdsourcing tools
+# `Domain name setup`
 
-Our lab uses **`Amazon Mechanical Turk`** ("mturk") for crowdsourcing our experiments online. In order to make our server-side infrastructure compatibile with mturk, we have to enable [https](https://https.cio.gov/faq/) encryption between our servers and third parties. We'll do this in two steps. First, we need to set up a domain name. Second, we need to set up a [SSL Certificate](https://www.globalsign.com/en/ssl-information-center/what-is-an-ssl-certificate/) for our server. This is all to protect the privacy of people who are participating in our studies. 
+The main purpose of this section is to ensure that your server is compatibile with online crowdsourcing tools. Our lab uses **`Amazon Mechanical Turk`** ("mturk"), and in order to make this server-side infrastructure compatibile with mturk we have to enable [https](https://https.cio.gov/faq/) encryption between our servers and third parties. To enable https, first, we need to set up a domain name, then go through the appropriate steps to secure it. 
 
-### Step 1.1: Get a domain name
+### A general outline of the steps at this stage: 
+
+1. Purchase a domain name 
+2. Route the domain name to your server's IP address with DNS
+3. Manage your domain name's DNS records with Digital Ocean
+4. Install and configuring `Apache` to manage the domain name traffic
+
+### 1) Get a domain name
 
 A domain name is just a human readable pointer to some location on the internet. For example, `google.com` is a more legible version of it's Internet Protocol (IP) address, `172.217.6.206`, but a web browser understands them both just fine. Your droplet already has an IP address. So you just need to find a domain name and then route visitors from that domain name to your server, like google does. 
 
 We've used [namecheap](https://www.namecheap.com/), but you can use whatever providor you like--[freenom](https://www.freenom.com/en/index.html) is free, but we haven't tested it. 
 
-### Step 1.2: Routing domain names to IP addresses
+### 2) Route your domain names to your IP addresses
 
 DNS (**`Domain Name System`**) is a naming system that maps a server's domain name, like `google.com`, to an IP address, like `172.217.6.206`. **`Registrars`** are organizations that have completed some accreditation process that allows them to sell domain names (e.g. Namecheap). Once you've purchased a domain name, you can manage your DNS records with other providers (e.g. digital ocean). 
 
@@ -18,7 +25,7 @@ In order to manage your DNS records with digital ocean, first you need to tell y
 - ns2.digitalocean.com
 - ns3.digitalocean.com
 
-### Step 1.3: Configuring your Digital Ocean droplet
+### 3) Configure your Digital Ocean droplet
 
 [Add your domain name to your droplet](https://www.digitalocean.com/docs/networking/dns/how-to/add-domains/) so that you can manage you DNS records on Digital Ocean. Once you've done this, [set up two A records](https://www.digitalocean.com/docs/networking/dns/how-to/manage-records/) using DigitalOcean DNS. First set the host name with an '@' (which will give you `yourdomainname.com`) in the first box, then paste the IP address of your server in the second box. Second, set the host name in the first box with `www.` (which will give you `www.yourdomainname.com`) and enter the same IP address in the second box. 
 
@@ -30,65 +37,13 @@ now you'll be able to do it like this:
 	
 	ssh root@yourdomainname.com
 
-Now that you're here, you should add a non-root user and configure apache on the server, in that order: 
+Alternatively, it might be that you need to use `root@www.yourdomainname.com`
 
-1. instructions for setting up a non-root [user](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-16-04)
-2. instructions for [configuring apache](https://www.digitalocean.com/community/tutorials/how-to-set-up-apache-virtual-hosts-on-ubuntu-16-04)
+### 4) Install and configure **`Apache`**
 
-
-
-. . .
-
-
-### Step 2: getting an SSL certificate
-
-Setting up a SSL certificate is straightforward through the [command line on your droplet](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-18-04), logged in as a non-root sudo user. 
-
-
-Be judicious using there, as there's a per-week limit: https://letsencrypt.org/docs/rate-limits/
-
-### Step 3: configuring your server's firewall 
-
-When we run experiments, we're going to direct people to specific ports (e.g. `https://cutename:8888`) so we need to give people access to them in the firewall. 
-
+Set up [apache](https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-18-04) and make sure entering your domain name into the browser redirects you to your server. 
 
 ```
-sudo ufw allow 8888
-```
-
-Or if we want a range: 
+https://<yourdomainname.com>
 
 ```
-sudo ufw allow 8880:8889/tcp
-```
-
-
-Running the following command 
-
-```
-sudo ufw status numbered
-```
-
-should output: 
-
-```
-Status: active
-
-     To                         Action      From
-     --                         ------      ----
-[ 1] OpenSSH                    ALLOW IN    Anywhere
-[ 2] Apache Full                ALLOW IN    Anywhere
-[ 3] 8880:8889/tcp              ALLOW IN    Anywhere
-[ 4] OpenSSH (v6)               ALLOW IN    Anywhere (v6)
-[ 5] Apache Full (v6)           ALLOW IN    Anywhere (v6)
-[ 6] 8880:8889/tcp (v6)         ALLOW IN    Anywhere (v6)
-```
-
-In order to use ... Set up [apache](https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-18-04)
-
-
-#### configuring node to run via https
-
-https://www.sitepoint.com/how-to-use-ssltls-with-node-js/
-
-
