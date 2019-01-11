@@ -1,4 +1,4 @@
-# A 'Hello World!' example in node
+# A 'Hello World!' example with our server side infrastructure
 
 This is a bare bones example that utilizes all of the server side infrastructure we've been developing. It's a good place to start if you need to troubleshoot your setup or try to understand what's going on under the hood. Generally: 
 
