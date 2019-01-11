@@ -47,11 +47,6 @@ var handle_duplicate = function(req, res) {
 
 function get_previous_participation(worker_id, database, i_collection, resolve, reject){
   
-  const mongodb = require('mongodb');
-  const MongoClient = mongodb.MongoClient;
-  const mongoCreds = require('./auth.json');
-  const mongoURL = `mongodb://${mongoCreds.user}:${mongoCreds.password}@localhost:27017/`;
-
   // CONNECT TO DATABASE
   const mongo_creds = require('../auth.json');
   const mongo_url = `mongodb://${mongo_creds.user}:${mongo_creds.password}@localhost:27017/`;

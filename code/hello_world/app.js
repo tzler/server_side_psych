@@ -1,4 +1,5 @@
 // IMPORT MODULES 
+
 const express = require('express');
 const app = express();
 const fs = require('fs'); 
@@ -11,11 +12,11 @@ const socket_io = require('socket.io');
 global.__base = __dirname + '/';
 
 // SETUP TRAFFIC PERMISSIONS (MONGO/HTTPS/firewall)
-//
+
 // firewall permitted port we'll use
-const external_port = 8888;
+const external_port = 8881;
 // location of ssl and mongo credentials
-const credentials = 'credentials/'
+const credentials = '../credentials/'
 // extract relevant info from SSL key and certification
 const options = {
   key:  fs.readFileSync(credentials + "ssl_privatekey"), 
@@ -30,7 +31,8 @@ const db_key = JSON.parse(fs.readFileSync(credentials + 'mongo_keys'));
 const mongo_url = `mongodb://${db_key.user}:${db_key.pwd}@localhost:27017`;
 console.log('mongo_url:', mongo_url)
 
-// DEFINE SERVER SIDE PORT OPERATIONS
+// DEFINE SERVER SIDE OPERATIONS
+
 // open port on the serverd 
 server.listen(external_port, function() {
   // server side console log
