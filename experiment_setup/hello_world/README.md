@@ -2,19 +2,11 @@
 
 This is a bare bones example that utilizes all of the server side infrastructure we've been developing. It's a good place to start if you need to troubleshoot your setup or try to understand what's going on under the hood. Generally: 
 
-- `index.html`: the 'landing page' served to the client, with instructions for the server
+- `index.html`: the 'landing page' served to the client
 - `app.js`: mangages server-client interactions, and server-server interactions (e.g. mongo queries)
 - `functions.js`: client side functions that link html elements (e.g. buttons) with server side processes
 
-You'll need to create a folder in this directory called `credentials` that has three json files you've created throughout the set up process: 
-
-- `mongo_keys`: contains the user and password you set to secure mongodb 
-- `ssl_certificate`: the ssl certificate you generated to enable https 
-- `ssl_privatekey`: the ssl private key you generated to enable https 
-
-You'll also need to make sure you have `port 8888` enabled in your firewall. 
-
-Once you have these requirements met, initialize the `node` modules in this folder with `npm`:
+First, initialize the `node` modules in this folder with `npm`:
 
 ```  
 $ npm init --yes # initialize and accept all defaults
