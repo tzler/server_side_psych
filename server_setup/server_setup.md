@@ -2,14 +2,8 @@
 
 1. Initialize a Digital Ocean "Droplet" (a cloud computing resource)
 2. Setup a non-root sudo user (a user with administrative privileges) 
-3. Install primary dependencies
-	- **`node`** 	
-	- **`mongodb`**
-
-Throughout this process we'll take several initial security measures
-
-- Setting up a firewall
-- Enabling user authentification on mongo 
+3. Installing `node.js`, which will manage our server client interactions 
+4. Installing `mongodb`, which will be our server side database
 
 ### 1. Initialize a Digital Ocean "Droplet
 
@@ -74,19 +68,88 @@ $ usermod -aG sudo sammy
 
 Now, when logged in as your regular user, you can type sudo before commands to perform actions with superuser privileges.
 
-### 3 Installing `node` 
+## 3 Installing `node.js` 
 
-The first thing we want to do is set up `node`, which is going to be handling all of our server-side programming needs. We want to install a recent version of `node` by following the steps [here](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-18-04). Use `10.x` just like the instructions do and feel free to delete `nodesource_setup.sh` after you've set everything up.
+Node isn't a programming language; it's a runtime environment for executing javascript code. From wikipedia: 
 
-Node isn't a programming language; it's a runtime environment for executing javascript code. Definitely look up some tutorials online to get more familiar with node, but we'll take care of everything you need for this first project. We'll also be using [npm](https://nodesource.com/blog/an-absolute-beginners-guide-to-using-npm/). 
+> Node.js is an open-source, cross-platform JavaScript run-time environment that executes JavaScript code outside of a browser. JavaScript is used primarily for client-side scripting, in which scripts written in JavaScript are embedded in a webpage's HTML and run client-side by a JavaScript engine in the user's web browser. Node.js lets developers use JavaScript to write command line tools and for server-side scripting—running scripts server-side to produce dynamic web page content before the page is sent to the user's web browser. Consequently, Node.js represents a "JavaScript everywhere" paradigm, unifying web application development around a single programming language, rather than different languages for server side and client side scripts.
 
-### 3.2 Installing `mongodb`
+Definitely look up some tutorials online to get more familiar with node, but we'll take care of everything you need for this first project. 
 
-We'll be using [these instructions](https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubuntu-18-04) to set up the database, and then [secure it](https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-mongodb-on-ubuntu-16-04#part-three-configuring-remote-access-(optional)). 
+### 3.1 downloading primary dependencies for node
 
-### Step 1 — Installing MongoDB
+```
+$ sudo apt update
+```
+
+Install Node.js from the repositories:
+
+```
+$ sudo apt install nodejs
+```
+
+ 
+
+We're also installing ([npm](https://nodesource.com/blog/an-absolute-beginners-guide-to-using-npm/)), the Node.js package manager. You can do this by typing:
+
+```
+$ sudo apt install npm
+```
+
+This will allow you to install modules and packages to use with Node.js.
+
+To check which version of Node.js you have installed after these initial steps, type:
+
+```
+nodejs -v
+```
+
+### 3.2 getting more recent versions 
+
+To get a more recent version of Node.js you can add the PPA (personal package archive) maintained by NodeSource. This will have more up-to-date versions of Node.js than the official Ubuntu repositories, and will allow you to choose between Node.js v6.x (supported until April of 2019), Node.js v8.x (the current LTS version, supported until December of 2019), Node.js v10.x (the second current LTS version, supported until April of 2021), and Node.js v11.x (the current release, supported until June 2019).
+
+First, install the PPA in order to get access to its contents. From your home directory, use curl to retrieve the installation script for your preferred version, making sure to replace 10.x with your preferred version string (if different):
+
+```
+$ cd ~
+$ curl -sL https://deb.nodesource.com/setup_10.x -o nodesource_setup.sh
+```
+
+Run the script under sudo:
+
+```
+$ sudo bash nodesource_setup.sh
+```
+
+The PPA will be added to your configuration and your local package cache will be updated automatically. After running the setup script from Nodesource, you can install the Node.js package in the same way you did above:
+```
+sudo apt install nodejs
+```
+To check which version of Node.js you have installed after these initial steps, type:
+
+```
+nodejs -v
+
+Output
+v10.14.0
+```
+
+The nodejs package contains the nodejs binary as well as npm, so you don't need to install npm separately.
+
+npm uses a configuration file in your home directory to keep track of updates. It will be created the first time you run npm. Execute this command to verify that npm is installed and to create the configuration file:
+
+```
+npm -v
+Output
+6.4.1
+```
+
+## 4 Installing `mongodb`
 
 Ubuntu's official package repositories include an up-to-date version of MongoDB, which means we can install the necessary packages using apt.
+
+
+### 4.1 Initial install
 
 First, update the packages list to have the most recent version of the repository listings:
 
@@ -104,7 +167,7 @@ This command installs several packages containing the latest stable version of M
 
 Next, let's verify that the server is running and works correctly.
 
-###Step 2 — Checking the Service and Database
+### 4.2 Checking the Service and Database
 
 The installation process started MongoDB automatically, but let's verify that the service is started and that the database is working.
 
@@ -150,12 +213,11 @@ MongoDB server version: 3.6.3
         },
         "ok" : 1
 }
-A value of 1 for the ok field in the response indicates that the server is working properly.
 ```
-Next, we'll look at how to manage the server instance.
 
+A value of 1 for the ok field in the response indicates that the server is working properly.
 
-###Managing mongo 
+### 3.3 Managing mongo 
 
 Step 3 — Managing the MongoDB Service
 MongoDB installs as a systemd service, which means that you can manage it using standard systemd commands alongside all other sytem services in Ubuntu.
@@ -194,41 +256,6 @@ It's just as easy to enable it again. To do this, use:
 sudo systemctl enable mongodb
 ```
 
-But there is one critial difference you need to incorporate. 
-
-In order to secure the database with a password, the prescribed method [often doesn't work](https://stackoverflow.com/questions/23943651/mongodb-admin-user-not-authorized):  
-
-```
-> db.createUser(
-...		{
-...			user:'<username>',
-...			pwd:'<password>'
-... 		roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
-...	}
-...)
-```
-
-Instead, follow the format below, setting the user's `role` to `root` instead of `userAdminAnyDatabase`: 
-
-```
-> db.createUser(
-...		{
-...			user:'<username>',
-...			pwd:'<password>'
-... 		roles: [ { role: "root", db: "admin" } ]
-...	}
-...)
-```
-
-Once you're done, create a simple text file in `credentials/` called ` mongo_admin` that has the following information and json format: 
-
-```
-{
-	"user": "<username>",
-	"pwd": "<password>"
-}
-```
-
 # Experiment dry run
 
 At this point, the main server-side dependencies we need are in place. The remaining steps are primarily around server security and routing our domain name to the server. Still, we can demonstrate the basic functionality in just a few steps. 
@@ -237,21 +264,15 @@ Navigate to the folder with our example experiment and run the following command
 
 	$ npm install minimist express request socket.io underscore
 
-Now let's temporarilly disable the firewall
-
-	$ sudo ufw disable
  
 Now let's open a port using node, which will connect our experiment with the world outside: 
 
-	node app.js --port 8881
+	node app.js --port 8888
 
-In this case, we're running our experiment on port **`8881`**. Now direct your web browser to this location: 
+In this case, we're running our experiment on port **`8888`**. Now direct your web browser to this location: 
 
-	http://SERVER.IP.ADDRESS:8881/index.html
+	http://SERVER.IP.ADDRESS:8888/index.html
 
 You should see the following page, and be able to run through the experiment. 
 
 	[image of example experiment] 
-
-### **`TO DO :`**
-- need a better way to give permissions to user for cert and key
