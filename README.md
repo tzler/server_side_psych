@@ -1,7 +1,7 @@
 # Welcome! 
 ### This is an experiment-oriented introduction to server side infrastructure and programming
 
-We designed this repo for anyone interested in using server-side tools to run human behavioral experiments online. With the resources developed in this intro, you'll be set up to host an experiment on your server, route online participants to that location (e.g. via **`Amazon Mechanical Turk (mturk)`**), and utilize server side resources for experimental operations.
+This repo is designed for anyone interested in using server-side tools to run human behavioral experiments online. More specifically, With the resources developed in this intro, you'll be set up to host an experiment on your server, route online participants to that location (e.g. via **`Amazon Mechanical Turk (mturk)`**), and utilize server side resources for experimental operations.
 
 #### Outline of experimental infrastructure: 
 
@@ -19,7 +19,9 @@ In `server_setup` we walk through server setup, security, and routing, all in or
 
 ### A relevant use case: experimental access to a server side database
 
-Ee demonstrate the utility of server side tools by focusing on a particularly relevant use case: integrating experimental functions with a server side database. We provide well commented, extensible code that performs two basic functions. **`Experiment initialization`**: At the begining of each experiment, we query the database and redirect a participant if they've previously participated in the study (implimented using mturk's `workerId`). **`Data collection`**: After each trial, that trial's data is saved to the database. 
+We demonstrate the utility of server side tools by focusing on a particularly relevant use case: linking up your client-side experiment with a server side database. 
+
+We provide well commented, extensible code that performs two basic functions. **`Query the database`**: At the begining of each experiment, we query the database, redirect a participant if they've previously participated in the study (implimented using mturk's `workerId`), and perform any other helpful server side operations. **`Data collection`**: After each trial, that trial's data is saved to the database. 
 
 We chose these operations for two reasons:
 
