@@ -16,7 +16,7 @@ global.__base = __dirname + '/';
 // firewall permitted port we'll use
 const external_port = 8888;
 // location of ssl and mongo credentials
-const credentials = '../credentials/'
+const credentials = '../../credentials/'
 // extract relevant info from SSL key and certification
 const options = {
   key:  fs.readFileSync(credentials + "ssl_privatekey"), 
@@ -51,7 +51,7 @@ var serve_file = function(req, res) {
   // extract name of file requested
   var file_name = req.params[0];
    // server side console log
-  console.log('\t :: Express :: file requested: ' + file_name);
+  console.log('\t :: express :: file requested: ' + file_name);
   // return file to client
   return res.sendFile(file_name, {root: __base});
 };
