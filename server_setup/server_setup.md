@@ -254,23 +254,21 @@ It's just as easy to enable it again. To do this, use:
 sudo systemctl enable mongodb
 ```
 
-# Experiment dry run
+# node test
 
-At this point, the main server-side dependencies we need are in place. The remaining steps are primarily around server security and routing our domain name to the server. Still, we can demonstrate the basic functionality in just a few steps. 
+At this point, the main server-side dependencies we need are in place. The remaining steps are primarily around server security and routing our domain name to the server. Let's make sure that our setup so far is in order. 
 
-Navigate to the folder with our example experiment and run the following commands to initialize our node-dependent packages: 
+First, open up a server on port 8888 with the script in this directory by running
 
-	$ npm install minimist express request socket.io underscore
+```
+node test.js
+```
 
- 
-Now let's open a port using node, which will connect our experiment with the world outside: 
+Now open your browser and navigate to this page: 
 
-	node app.js --port 8888
+```
+http://YOUR.SERVER.IP.ADDRESS:8888/
 
-In this case, we're running our experiment on port **`8888`**. Now direct your web browser to this location: 
+```
 
-	http://SERVER.IP.ADDRESS:8888/index.html
-
-You should see the following page, and be able to run through the experiment. 
-
-	[image of example experiment] 
+You should get a message in your browser telling you `Great! NodeJS is running on your server :)` and you should also be able to read a server side message telling you that you've successfully sent a message to the client. 
