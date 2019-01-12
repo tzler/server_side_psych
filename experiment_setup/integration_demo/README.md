@@ -2,7 +2,9 @@
 
 This folder contains scripts and illustrate how to adapt your own experiments to utilize the server side functions contained in this repository. 
 
-There are only several lines of code that need to be added to your current scripts. All of these details below use a [demo reaction time experiment](https://www.jspsych.org/tutorials/rt-task/) implimented in **`jsPsych`**. For clarity, we've factored out the javascript from the html. 
+There are only several lines of code that need to be added to your current scripts. All of these details below use a [demo reaction time experiment](https://www.jspsych.org/tutorials/rt-task/) implimented in **`jsPsych`**. For clarity, we've factored out the javascript from the html so we have `index.html` and `functions.js` files instead of just one file containing everything. 
+
+### 1. Installing dependencies in directory
 
 First, let's clone the jsPsych repository: 
 
@@ -22,7 +24,15 @@ and install the dependencies we'll need
 $ npm install express mongodb assert https socket.io minimist
 ```
 
-Now we're ready to integrate our server-side tools with this simple experiment. First, we'll make sure that each experiment imports node's `socket.io`. You can do this by directing the client to the directory where node (e.g. app.js) is running, using the header in your HTML file. Most commonly this is in index.html; in the demo it's line 9 of index.html, which is essentially: 
+Now we're ready to integrate our server-side tools with this simple experiment. 
+
+### 2. Integrating client side javascript with node 
+
+node's `socket.io` is going to communicate across client-server platforms by "listening" for and "emitting" events. For the most part, the server is going to listen and the client will emit. 
+
+For example, when you run `node app.js` in the command line, node is going to open a server on a prespecified port and listen with `socket.io`. The client has to connect with this same socket. 
+
+We initiate this connection by using the header in the client's HTML. Most commonly this is in index.html (`index.html:9`) which is essentially: 
 
 ```
 <head>
@@ -30,15 +40,15 @@ Now we're ready to integrate our server-side tools with this simple experiment. 
 </head>
 ```
 
-Because app.js is running in the same folder as index.html, use direct the client to the current working directory with `./socket.io/socket.io.js`, but could also move up the directory using `../socket.io/socket.io.js`, etc. 
+Because app.js is running in the same folder as index.html, we direct the client to the current working directory with `./socket.io/socket.io.js`, but could also move up the directory using `../socket.io/socket.io.js`, etc. 
 
-Next, we connect to a node socket with our client side javascript. Most commonly this would be done in functions.js, as we have (`functions.js:1`) or within the `<script>` tag in your html file: 
+Next, we just need one line of code to connect this node-based socket to client side javascript. You can do this as we have in `functions.js:1` or within the `<script>` tag in your html file: 
 
 ```
 socket = io.connect();
 ```
 
-Now we can connect this node process with a client side function in javascript (`functions.js:2-4`): 
+Now we can create a function to we can use in javascript that will call this node process (`functions.js:2-4`): 
 
 ```
 save_trial_to_database = function(trial_data){
@@ -46,7 +56,9 @@ save_trial_to_database = function(trial_data){
 }
 ```
 
-Node has a socket open listening for `'insert'`. The function `save_trial_to_database()` can be called whenever you'd like, and we've chosen to do this at the end of each trial. In jsPsych this can be implimented by modifying the `on_finish` callback function (`functions.js:57-61`), which is simply:  
+The function `save_trial_to_database()` sends `trial_data` to the server. node is listening for the `insert` tag and has a pre-defined protocol for inserting that data into the database. 
+
+We can call this function whenever we'd like; we've chosen to do this at the end of each trial. In jsPsych this can be implimented by modifying the `on_finish` callback function (`functions.js:57-61`), which is simply:  
 
 ```
 on_finish: function(data){
