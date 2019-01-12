@@ -1,4 +1,4 @@
-# `security setup`
+# `Security Setup`
 
 
 Now that you have a domain name that is routed to your server, we need to set up an [SSL Certificate](https://www.globalsign.com/en/ssl-information-center/what-is-an-ssl-certificate/) in order to enable https. This is all to protect the privacy of people who are participating in our studies. We'll also take several steps in this sections to protect our database. 
@@ -10,7 +10,7 @@ Now that you have a domain name that is routed to your server, we need to set up
 3. Configure your server's firewall, enabling experimental ports
 4. Establish permissions for node to run via https on prespecified ports
 
-## 1. SSL certification
+## 1. `SSL certification`
 
 Setting up a SSL certificate is straightforward from the command line on your droplet, logged in as a non-root sudo user. Be judicious using there, as there's a [per-week limit](https://letsencrypt.org/docs/rate-limits/) using this free resource. 
 
@@ -161,7 +161,7 @@ $ sudo cat /etc/letsencrypt/live/<your_domain_name>/privkey.pem > credentials/ss
 
 There area lots of other ways you can do this; regardless of how, *make sure that your non-root sudo users has read access to these files*. 
 
-## 2 Securing mongo
+## 2 `Securing Mongodb`
 
 To secure our database we'll create an administrative user, enable authentication, and test to make sure we have access to a secure database.
 
@@ -353,7 +353,7 @@ admin  0.000GB
 local  0.000GB
 ```
 
-## 3 Configure your server's firewall 
+## 3 `Configure server's firewall`
 
 Now let's take measurse to protect our server: configuring a firewall. To do this we'll need to initialize a firewall, and enable the ports we'll be using for our experiments--as well as our `ssh` access to the server. 
 
@@ -363,7 +363,6 @@ First, let's check on the status of our firewall
 
 ```
 $ sudo ufw status
-
 ```
 
 [ should be disabled ] 
@@ -372,8 +371,8 @@ Now let's see what port profiles are available:
 
 ```
 $ sudo ufw app list
-
 ```
+
 There are other ways of establishing the same firewall functionality, but these profiles are in a nice, human readable format. First let's enable ssh so we can continue logging onto the server (otherwise we'd be locked out!): 
 
 ```
@@ -384,6 +383,7 @@ And let's enable `Apache Full`, which supports https:
 ```
 $ sudo ufw allow 'Apache Full'
 ```
+
 We can get a list of the ports the firewall gives us access too with
 
 ```
@@ -443,7 +443,7 @@ Apache Full (v6)           ALLOW       Anywhere (v6)
 27017 (v6)                 ALLOW       Anywhere (v6)
 ```
 
-## 4 Configure node to incorporate authentification keys
+## 4 `Configure authentification keys in node`
 
 *All of these steps have been implimented in `experiment_setup/hello_world/app.js`. This is just a guide through that logic.* 
 
