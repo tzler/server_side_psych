@@ -354,7 +354,7 @@ When we issue the db.createUser command, the shell will prepend three dots befor
 
 ```
 Successfully added user: {
-        "user" : "AdminSammy",
+        "user" : "your_admin_name",
         "roles" : [
                 {
                         "role" : "root",

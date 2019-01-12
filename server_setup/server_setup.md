@@ -38,7 +38,7 @@ Say `yes` and paste `yOuRPasSWoRD` after copying it from the email, then follow 
 
 The root user is the administrative user in a Linux environment that has very broad privileges. Because of the heightened privileges of the root account, you are discouraged from using it on a regular basis. This is because part of the power inherent with the root account is the ability to make very destructive changes, even by accident.
 
-### 1.2 Creating a New User
+### 2.2 Creating a New User
 
 Once you are logged in as root, we're prepared to add the new user account that we will use to log in from now on.
 
@@ -52,7 +52,7 @@ You will be asked a few questions, starting with the account password.
 
 Enter a strong password and, optionally, fill in any of the additional information if you would like. This is not required and you can just hit ENTER in any field you wish to skip.
 
-### 1.3 Granting Administrative Privileges
+### 2.3 Granting Administrative Privileges
 
 Now, we have a new user account with regular account privileges. However, we may sometimes need to do administrative tasks.
 
@@ -87,8 +87,6 @@ Install Node.js from the repositories:
 ```
 $ sudo apt install nodejs
 ```
-
- 
 
 We're also installing ([npm](https://nodesource.com/blog/an-absolute-beginners-guide-to-using-npm/)), the Node.js package manager. You can do this by typing:
 
