@@ -268,7 +268,6 @@ Now open your browser and navigate to this page:
 
 ```
 http://YOUR.SERVER.IP.ADDRESS:8888/
-
 ```
 
 You should get a message in your browser telling you `Great! NodeJS is running on your server :)` and you should also be able to read a server side message telling you that you've successfully sent a message to the client. 
