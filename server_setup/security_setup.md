@@ -6,15 +6,15 @@ Now that you have a domain name that is routed to your server, we need to set up
 
 ### Security-related steps: 
 1. Get an SSL certification to enable https between your server and third parties
-2. Configure your server's firewall, blocking all non-experimental ports
-3. Establish permissions for node to run via https on prespecified ports
-4. Secure mongo database, authenticate node-base mongo processes
+2. Secure mongo database with a user specified password
+3. Configure your server's firewall, enabling experimental ports
+4. Establish permissions for node to run via https on prespecified ports
 
 ## 1. SSL certification
 
-Setting up a SSL certificate is straightforward through the [command line on your droplet](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-18-04), logged in as a non-root sudo user. Be judicious using there, as there's a [per-week limit](https://letsencrypt.org/docs/rate-limits/). 
+Setting up a SSL certificate is straightforward from the command line on your droplet, logged in as a non-root sudo user. Be judicious using there, as there's a [per-week limit](https://letsencrypt.org/docs/rate-limits/) using this free resource. 
 
-#### Make sure that you have: 
+#### Verify that you have: 
 
 - An A record with `example.com` pointing to your server's public IP address.
 - An A record with `www.example.com` pointing to your server's public IP address.
@@ -161,13 +161,254 @@ $ sudo cat /etc/letsencrypt/live/<your_domain_name>/privkey.pem > credentials/ss
 
 There area lots of other ways you can do this; regardless of how, *make sure that your non-root sudo users has read access to these files*. 
 
-## 2 Configure your server's firewall 
+## 2 Securing mongo
 
-Now let's take measurse to protect our server: configuring a firewall.
+To secure our database we'll create an administrative user, enable authentication, and test to make sure we have access to a secure database.
 
-When we run experiments, we're going to direct people to specific ports, so we need to give people access them across the firewall. For a single port, (e.g. `8888`) we could enable acccess to this port by running `sudo ufw allow 8888`. However, we want to allow a range of ports, because we might be running multiple experiments at the same time. 
+### 2.1 Adding an Administrative User
 
-To open our ports 8880-8889 
+To add our user, we'll connect to the Mongo shell via the command line:
+
+```
+$ mongo
+```
+
+The output when we use the Mongo shell warns us that access control is not enabled for the database and that read/write access to data and configuration is unrestricted.
+
+```
+Output
+MongoDB shell version v3.4.2
+connecting to: mongodb://127.0.0.1:27017
+MongoDB server version: 3.4.2
+Welcome to the MongoDB shell.
+For interactive help, type "help".
+For more comprehensive documentation, see
+        http://docs.mongodb.org/
+Questions? Try the support group
+        http://groups.google.com/group/mongodb-user
+Server has startup warnings:
+2017-02-21T19:10:42.446+0000 I STORAGE  [initandlisten]
+2017-02-21T19:10:42.446+0000 I STORAGE  [initandlisten] ** WARNING: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine
+2017-02-21T19:10:42.446+0000 I STORAGE  [initandlisten] **          See http://dochub.mongodb.org/core/prodnotes-filesystem
+2017-02-21T19:10:42.534+0000 I CONTROL  [initandlisten]
+2017-02-21T19:10:42.534+0000 I CONTROL  [initandlisten] ** WARNING: Access control is not enabled for the database.
+2017-02-21T19:10:42.534+0000 I CONTROL  [initandlisten] **          Read and write access to data and configuration is unrestricted.
+2017-02-21T19:10:42.534+0000 I CONTROL  [initandlisten]
+>
+```
+
+We're free to choose the name for the administrative user since the privilege level comes from the assignment of the role `root` (but see exception below). The database, admin designates where the credentials are stored. You can learn more about authentication in the MongoDB Security Authentication section.
+
+Set the username of your choice and be sure to pick your own secure password and substitute them in the command below:
+
+```
+> use admin
+> db.createUser(
+... {
+...    user: "your_admin_name",
+...    pwd: "your_admin_password",
+...    roles: [ { role: "root", db: "admin" } ]
+...  }
+...)
+```
+
+**`POSSIBLE EXCEPTION`**: On some systems you might need to use a different role in order to have admin accuess. If you encounter anthentification errors with the mongo database you might just need to replace the roles above with: 
+
+- `roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]`
+
+When we issue the db.createUser command, the shell will prepend three dots before each line until the command is complete. After that, we should receive feedback like the following when the user has been added.
+
+```
+Successfully added user: {
+        "user" : "your_admin_name",
+        "roles" : [
+                {
+                        "role" : "root",
+                        "db" : "admin"
+                }
+        ]
+}
+```
+
+Type 'exit' and press ENTER or use CTRL+C to leave the client.
+
+Once you're done, create a simple text file in `credentials/` called ` mongo_admin` that has the following information and json format: 
+
+```
+{
+	"user": "<username>",
+	"pwd": "<password>"
+}
+```
+
+At this point, our user will be allowed to enter credentials, but they will not be required to do so until we enable authentication and restart the MongoDB daemon.
+
+### 2.2 Enabling Authentication
+
+Authentication is enabled in the mongod.conf file. Once we enable it and restart mongod, users still will be able to connect to Mongo without authenticating, but they will be required to provide a username and password before they can interact.
+
+Let's open the configuration file with vi (or whatever text editor you'd prefer):
+
+```
+$ sudo vi /etc/mongod.conf
+```
+
+In the `#security` section, we'll remove the hash in front of security to enable the stanza. Then we'll add the authorization setting. When we're done, the lines should look like the excerpt below:
+
+```
+ . . .
+security:
+  authorization: "enabled"
+ . . . 
+```
+
+Note that the “security” line has no spaces at the beginning, and the “authorization” line must be indented with two spaces
+
+Once we've saved and exited the file, we'll restart the daemon:
+
+```
+sudo systemctl restart mongod
+```
+
+If we've made an error in the configuration, the dameon won't start. Since systemctl doesn't provide output, we'll use its status option to be sure that it did:.
+
+```
+sudo systemctl status mongod
+```
+
+If we see Active: active (running) in the output and it ends with something like the text below, we can be sure the restart command was successful:
+
+```
+Output
+Jan 23 19:15:42 MongoHost systemd[1]: Started High-performance, schema-free document-oriented database.
+```
+
+Having verified the daemon is up, let's test authentication.
+
+### 2.3 Verifying that unauthenticated Users are Restricted
+
+First, let's connect without credentials to verify that our actions are restricted:
+
+```
+$ mongo 
+```
+
+Now that we've enabled authentication, all of the earlier warnings are resolved.
+
+```
+Output
+MongoDB shell version v3.4.2
+connecting to: mongodb://127.0.0.1:27017
+MongoDB server version: 3.4.2
+```
+
+We're connected to the test database. We'll test that our access is restricted with the `show dbs` command:
+
+```
+> show dbs
+Output
+2017-02-21T19:20:42.919+0000 E QUERY    [thread1] Error: listDatabases failed:{
+        "ok" : 0,
+        "errmsg" : "not authorized on admin to execute command { listDatabases: 1.0 }",
+        "code" : 13,
+        "codeName" : "Unauthorized"
+ . . . 
+```
+
+We wouldn't be able to create users or similarily privileged tasks without authenticating.
+
+Let's exit the shell to proceed:
+
+```
+> exit
+```
+
+Next, we'll make sure our Administrative user does have access.
+
+### 2.4 Verifying the administrative user's access
+
+We'll connect as our administrator with the -u option to supply a username and -p to be prompted for a password. We will also need to supply the database where we stored the user's authentication credentials with the --authenticationDatabase option.
+
+``
+mongo -u <your_user_name> -p --authenticationDatabase admin
+``
+
+We'll be prompted for the password, so supply it. Once we enter the correct password, we'll be dropped into the shell, where we can issue the show dbs command:
+
+```
+Output
+MongoDB shell version v3.4.2
+Enter password:
+connecting to: mongodb://127.0.0.1:27017
+MongoDB server version: 3.4.2
+>
+```
+
+Rather than being denied access, we should see the available databases:
+
+```
+> show dbs
+Output
+admin  0.000GB
+local  0.000GB
+```
+
+## 3 Configure your server's firewall 
+
+Now let's take measurse to protect our server: configuring a firewall. To do this we'll need to initialize a firewall, and enable the ports we'll be using for our experiments--as well as our `ssh` access to the server. 
+
+### 3.1 setting up https and mongo access
+
+First, let's check on the status of our firewall
+
+```
+$ sudo ufw status
+
+```
+
+[ should be disabled ] 
+
+Now let's see what port profiles are available:
+
+```
+$ sudo ufw app list
+
+```
+There are other ways of establishing the same firewall functionality, but these profiles are in a nice, human readable format. First let's enable ssh so we can continue logging onto the server (otherwise we'd be locked out!): 
+
+```
+$ ufw allow OpenSSH
+```
+And let's enable `Apache Full`, which supports https:
+
+```
+$ sudo ufw allow 'Apache Full'
+```
+We can get a list of the ports the firewall gives us access too with
+
+```
+$ sudo ufw status
+```
+
+If `OpenSSH` and `Apache Full` have been enabled, the output should look like this: 
+
+```
+Output
+Status: active
+
+To                         Action      From
+--                         ------      ----
+OpenSSH                    ALLOW       Anywhere                  
+Apache Full                ALLOW       Anywhere                  
+OpenSSH (v6)               ALLOW       Anywhere (v6)             
+Apache Full (v6)           ALLOW       Anywhere (v6)  
+```
+
+### 3.2 Setting up access to experimental ports
+
+When we run experiments, we're going to direct people to specific ports on our server, so we need to give people access to these specific ports across the firewall. For a single port, (e.g. `8888`) we could enable acccess to this port by running `sudo ufw allow 8888`. But we want to allow a range of ports, because we might be running multiple experiments at the same time. 
+
+To open ports 8880-8889 
 
 ```
 $ sudo ufw allow 8880:8889/tcp
@@ -201,14 +442,18 @@ Apache Full (v6)           ALLOW       Anywhere (v6)
 8880:8889/tcp (v6)         ALLOW       Anywhere (v6)
 27017 (v6)                 ALLOW       Anywhere (v6)
 ```
-### 3) Configure node to incorporate these authentification keys
+
+## 4 Configure node to incorporate authentification keys
+
+*All of these steps have been implimented in `experiment_setup/hello_world/app.js`. This is just a guide through that logic.* 
 
 Now that we've set up all these security protocols, we need to ensure that the node has permission to operate within them; running default http ports here, for example, would just result in an error. That is, node needs to be able to tell the server (firewall, apache, etc.) that it has permission to to operate freely. 
+
+
 
 We begin at the top of **`app.js`**, importing the modules we'll need (omitting modules not relevant for security purposes)
 
 ```
-
 const express = require('express'); 
 const app = express();
 const mongo_client = require('mongodb').MongoClient;
@@ -244,255 +489,9 @@ const io = socket_io(server)
 // use mongo_url to connect to database
 	... 
 	mongo_client.connect(mongo_url, function(err,client) {
-		... 
-		// omitting whole function but making clear the use case
+	... 
+// omitting whole function but making clear the use case
 
 ```
 
 This should allow us to operate freely, even while our server is more secure. 
-
-
-# mongodb setup 
-
-
-But there is one critial difference you need to incorporate. 
-
-In order to secure the database with a password, the prescribed method [often doesn't work](https://stackoverflow.com/questions/23943651/mongodb-admin-user-not-authorized):  
-
-```
-> db.createUser(
-...		{
-...			user:'<username>',
-...			pwd:'<password>'
-... 		roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
-...	}
-...)
-```
-
-Instead, follow the format below, setting the user's `role` to `root` instead of `userAdminAnyDatabase`: 
-
-```
-> db.createUser(
-...		{
-...			user:'<username>',
-...			pwd:'<password>'
-... 		roles: [ { role: "root", db: "admin" } ]
-...	}
-...)
-```
-
-Once you're done, create a simple text file in `credentials/` called ` mongo_admin` that has the following information and json format: 
-
-```
-{
-	"user": "<username>",
-	"pwd": "<password>"
-}
-```
-
-
-
-
-
-# Securing MongoDB
-
-Earlier versions of MongoDB were vulnerable to automated exploits because by default no authentication was required to interact with the database. Any user could create and destroy databases, as well as read from and write to their contents by default. This was compounded because those earlier versions also configured the MongoDB daemon to listen on all interfaces by default, which meant that automated scripts could detect MongoDB instances that weren't protected by a firewall and, if authentication hadn't been enabled, gain complete access to MongoDB.
-
-The situation has been mitigated in the 3.x release as well as earlier versions provided by some package managers because the daemon is now bound to 127.0.0.1 so it will only accept connections on the Unix socket. It is not automatically open to the Internet.
-
-However, authentication is still disabled by default, so any users on the local system have complete access to the databases. To secure this we'll create an administrative user, enable authentication and test.
-
-### Step 1 — Adding an Administrative User
-
-To add our user, we'll connect to the Mongo shell via the command line:
-
-```
-$ mongo
-```
-
-The output when we use the Mongo shell warns us that access control is not enabled for the database and that read/write access to data and configuration is unrestricted.
-
-```
-Output
-MongoDB shell version v3.4.2
-connecting to: mongodb://127.0.0.1:27017
-MongoDB server version: 3.4.2
-Welcome to the MongoDB shell.
-For interactive help, type "help".
-For more comprehensive documentation, see
-        http://docs.mongodb.org/
-Questions? Try the support group
-        http://groups.google.com/group/mongodb-user
-Server has startup warnings:
-2017-02-21T19:10:42.446+0000 I STORAGE  [initandlisten]
-2017-02-21T19:10:42.446+0000 I STORAGE  [initandlisten] ** WARNING: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine
-2017-02-21T19:10:42.446+0000 I STORAGE  [initandlisten] **          See http://dochub.mongodb.org/core/prodnotes-filesystem
-2017-02-21T19:10:42.534+0000 I CONTROL  [initandlisten]
-2017-02-21T19:10:42.534+0000 I CONTROL  [initandlisten] ** WARNING: Access control is not enabled for the database.
-2017-02-21T19:10:42.534+0000 I CONTROL  [initandlisten] **          Read and write access to data and configuration is unrestricted.
-2017-02-21T19:10:42.534+0000 I CONTROL  [initandlisten]
->
-```
-We're free to choose the name for the administrative user since the privilege level comes from the assignment of the role userAdminAnyDatabase. The database, admin designates where the credentials are stored. You can learn more about authentication in the MongoDB Security Authentication section.
-
-Set the username of your choice and be sure to pick your own secure password and substitute them in the command below:
-
-```
-> use admin
-> db.createUser(
-... {
-...    user: "your_admin_name",
-...    pwd: "your_admin_password",
-...    roles: [ { role: "root", db: "admin" } ]
-...  }
-...)
-```
-
-possible exception: `roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]`
-
-When we issue the db.createUser command, the shell will prepend three dots before each line until the command is complete. After that, we should receive feedback like the following when the user has been added.
-
-```
-Successfully added user: {
-        "user" : "your_admin_name",
-        "roles" : [
-                {
-                        "role" : "root",
-                        "db" : "admin"
-                }
-        ]
-}
-```
-
-Type 'exit' and press ENTER or use CTRL+C to leave the client.
-
-At this point, our user will be allowed to enter credentials, but they will not be required to do so until we enable authentication and restart the MongoDB daemon.
-
-Step 2 — Enabling Authentication
-Authentication is enabled in the mongod.conf file. Once we enable it and restart mongod, users still will be able to connect to Mongo without authenticating, but they will be required to provide a username and password before they can interact.
-
-Let's open the configuration file:
-
-```
-sudo nano /etc/mongod.conf
-```
-
-In the #security section, we'll remove the hash in front of security to enable the stanza. Then we'll add the authorization setting. When we're done, the lines should look like the excerpt below:
-
-```
-mongodb.conf
- . . .
-security:
-  authorization: "enabled"
- . . . 
-```
-
-Note that the “security” line has no spaces at the beginning, and the “authorization” line must be indented with two spaces
-
-Once we've saved and exited the file, we'll restart the daemon:
-
-```
-sudo systemctl restart mongod
-```
-
-If we've made an error in the configuration, the dameon won't start. Since systemctl doesn't provide output, we'll use its status option to be sure that it did:.
-
-```
-sudo systemctl status mongod
-```
-
-If we see Active: active (running) in the output and it ends with something like the text below, we can be sure the restart command was successful:
-
-```
-Output
-Jan 23 19:15:42 MongoHost systemd[1]: Started High-performance, schema-free document-oriented database.
-```
-
-Having verified the daemon is up, let's test authentication.
-
-Step 3 — Verifying that Unauthenticated Users are Restricted
-First, let's connect without credentials to verify that our actions are restricted:
-
-mongo 
-Now that we've enabled authentication, all of the earlier warnings are resolved.
-
-Output
-MongoDB shell version v3.4.2
-connecting to: mongodb://127.0.0.1:27017
-MongoDB server version: 3.4.2
-We're connected to the test database. We'll test that our access is restricted with the show dbs command:
-
-show dbs
-Output
-2017-02-21T19:20:42.919+0000 E QUERY    [thread1] Error: listDatabases failed:{
-        "ok" : 0,
-        "errmsg" : "not authorized on admin to execute command { listDatabases: 1.0 }",
-        "code" : 13,
-        "codeName" : "Unauthorized"
- . . . 
-We wouldn't be able to create users or similarily privileged tasks without authenticating.
-
-Let's exit the shell to proceed:
-
-exit
-Next, we'll make sure our Administrative user does have access.
-
-Step 4 — Verifying the Administrative User's Access
-We'll connect as our administrator with the -u option to supply a username and -p to be prompted for a password. We will also need to supply the database where we stored the user's authentication credentials with the --authenticationDatabase option.
-
-mongo -u AdminSammy -p --authenticationDatabase admin
-We'll be prompted for the password, so supply it. Once we enter the correct password, we'll be dropped into the shell, where we can issue the show dbs command:
-
-Output
-MongoDB shell version v3.4.2
-Enter password:
-connecting to: mongodb://127.0.0.1:27017
-MongoDB server version: 3.4.2
-
->
-Rather than being denied access, we should see the available databases:
-
-show dbs
-Output
-admin  0.000GB
-local  0.000GB
-Type exit or press CTRL+C to exit.
-
-
-
-
-### 1.3 Allowing HTTPS Through the Firewall
-
-If we set up a firewall, you'll need to adjust the settings to allow for HTTPS traffic. Luckily, Apache registers a few profiles with ufw upon installation.
-
-You can see the current setting by typing:
-
-sudo ufw status
-It will probably look like this, meaning that only HTTP traffic is allowed to the web server:
-
-Output
-Status: active
-
-To                         Action      From
---                         ------      ----
-OpenSSH                    ALLOW       Anywhere                  
-Apache                     ALLOW       Anywhere                  
-OpenSSH (v6)               ALLOW       Anywhere (v6)             
-Apache (v6)                ALLOW       Anywhere (v6)
-To additionally let in HTTPS traffic, allow the Apache Full profile and delete the redundant Apache profile allowance:
-
-sudo ufw allow 'Apache Full'
-sudo ufw delete allow 'Apache'
-Your status should now look like this:
-
-sudo ufw status
-Output
-Status: active
-
-To                         Action      From
---                         ------      ----
-OpenSSH                    ALLOW       Anywhere                  
-Apache Full                ALLOW       Anywhere                  
-OpenSSH (v6)               ALLOW       Anywhere (v6)             
-Apache Full (v6)           ALLOW       Anywhere (v6)  
-      
