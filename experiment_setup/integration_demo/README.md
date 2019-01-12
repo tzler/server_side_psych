@@ -66,6 +66,8 @@ on_finish: function(data){
 }
 ```
 
+### 3. Opening server to run experiment
+
 In this folder you can run 
 
 ```

@@ -7,12 +7,11 @@ Psychologists and cognitive neuroscientists increasingly rely on web-base crowds
 - **`javascript`**: browser-based experimental implimentation
 - **`node.js`**: experimental "backend," manages client-server interactions 
 - **`mongodb`**: NoSQL database for data management
-- **`Apache HTTP Server`**: manages web-server interface
 - **`Digital Ocean "droplet"`**: cloud computing resource 
 
-<div style='width:60%; text-align: center'>
-	<em>some visualization of infrastructure</em>:
-	<img src="some_image_.jpg">
+<div style='text-align:center'>
+	<p style='color:red; font-size:120%'<b>PLACEHOLDER IMAGE</b></p>
+	<img style='width: 80%' src="https://i1.wp.com/www.robert-drummond.com/wp-content/uploads/2013/05/web-app.png"></img>
 </div>
 
 ### An extensible use case: experimental access to a server side database
