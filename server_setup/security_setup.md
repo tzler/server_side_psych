@@ -161,7 +161,7 @@ $ sudo cat /etc/letsencrypt/live/<your_domain_name>/privkey.pem > credentials/ss
 
 There area lots of other ways you can do this; regardless of how, *make sure that your non-root sudo users has read access to these files*. 
 
-## 2 `Securing Mongodb`
+## 2. `Securing Mongodb`
 
 To secure our database we'll create an administrative user, enable authentication, and test to make sure we have access to a secure database.
 
@@ -353,7 +353,7 @@ admin  0.000GB
 local  0.000GB
 ```
 
-## 3 `Configure server's firewall`
+## 3. `Configure server's firewall`
 
 Now let's take measurse to protect our server: configuring a firewall. To do this we'll need to initialize a firewall, and enable the ports we'll be using for our experiments--as well as our `ssh` access to the server. 
 
@@ -443,7 +443,7 @@ Apache Full (v6)           ALLOW       Anywhere (v6)
 27017 (v6)                 ALLOW       Anywhere (v6)
 ```
 
-## 4 `Configure authentification keys in node`
+## 4. `Configure authentification keys in node`
 
 *All of these steps have been implimented in `experiment_setup/hello_world/app.js`. This is just a guide through that logic.* 
 

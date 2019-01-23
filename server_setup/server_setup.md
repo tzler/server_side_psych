@@ -4,6 +4,7 @@
 2. Setup a non-root sudo user (a user with administrative privileges) 
 3. Installing `node.js`, which will manage our server client interactions 
 4. Installing `mongodb`, which will be our server side database
+5. Testing that our setup was successfull
 
 ### 1. Initialize a Digital Ocean "Droplet
 
@@ -68,7 +69,7 @@ $ usermod -aG sudo sammy
 
 Now, when logged in as your regular user, you can type sudo before commands to perform actions with superuser privileges.
 
-## 3 Installing `node.js` 
+## 3. Installing `node.js` 
 
 Node isn't a programming language; it's a runtime environment for executing javascript code. From wikipedia: 
 
@@ -142,7 +143,7 @@ Output
 6.4.1
 ```
 
-## 4 Installing `mongodb`
+## 4. Installing `mongodb`
 
 Ubuntu's official package repositories include an up-to-date version of MongoDB, which means we can install the necessary packages using apt.
 
@@ -215,9 +216,8 @@ MongoDB server version: 3.6.3
 
 A value of 1 for the ok field in the response indicates that the server is working properly.
 
-### 3.3 Managing mongo 
+### 4.3 Managing mongo 
 
-Step 3 — Managing the MongoDB Service
 MongoDB installs as a systemd service, which means that you can manage it using standard systemd commands alongside all other sytem services in Ubuntu.
 
 To verify the status of the service, type:
@@ -254,7 +254,7 @@ It's just as easy to enable it again. To do this, use:
 sudo systemctl enable mongodb
 ```
 
-# node test
+## 5. node test
 
 At this point, the main server-side dependencies we need are in place. The remaining steps are primarily around server security and routing our domain name to the server. Let's make sure that our setup so far is in order. 
 

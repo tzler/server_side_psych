@@ -7,13 +7,13 @@ The main purpose of this section is to ensure that your server is compatibile wi
 1. Purchase a domain name 
 2. Route the domain name to your server's IP address with DNS
 3. Manage your domain name's DNS records with Digital Ocean
-4. Install and configuring `Apache` to manage the domain name traffic
+4. Install and configuring `Apache` to manage web traffic to the server 
 
 ## 1. Get a domain name
 
 A domain name is just a human readable pointer to some location on the internet. For example, `google.com` is a more legible version of it's Internet Protocol (IP) address, `172.217.6.206`, but a web browser understands them both just fine. Your droplet already has an IP address. So you just need to find a domain name and then route visitors from that domain name to your server, like google does. 
 
-We've used [namecheap](https://www.namecheap.com/), but you can use whatever providor you like--[freenom](https://www.freenom.com/en/index.html) is free, but we haven't tested it. 
+We've used [namecheap](https://www.namecheap.install and configure Apache to manage web traffic onto the server. com/), but you can use whatever providor you like--[freenom](https://www.freenom.com/en/index.html) is free, but we haven't tested it. 
 
 ## 2. Route your domain name to your IP addresses
 
@@ -27,7 +27,7 @@ In order to manage your DNS records with digital ocean, first you need to tell y
 
 This routing process can take up to 24 hours.
 
-## 3) Manage your DNS records on Digital Ocean
+## 3. Manage your DNS records on Digital Ocean
 
 Now you'll need to take care of these DNS records through Digital Ocean. 
 
@@ -40,7 +40,7 @@ Use the instructions [here](https://www.digitalocean.com/docs/networking/dns/how
 Now you'll need to [set up two A records](https://www.digitalocean.com/docs/networking/dns/how-to/manage-records/) using DigitalOcean's DNS for 
 
 - `yourdomainname.com`
-- `www.yourdomainname.com`.  
+- `www.yourdomainname.com`  
 
 It make take a minute for everything to register. 
 
@@ -60,7 +60,9 @@ $ ssh root@yourdomainname.com
 
 using the same user name and password. Alternatively, you need to use `root@www.yourdomainname.com`.
 
-## 4) Install and configure **`Apache`**
+## 4. Install and configure **`Apache`**
+
+Now we'll need to install and configure Apache to manage web traffic onto the server. 
 
 ### 4.1 Install Apache
 
