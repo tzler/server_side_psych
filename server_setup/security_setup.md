@@ -21,13 +21,6 @@ Setting up a SSL certificate is straightforward from the command line on your dr
 - Apache installed by following How To Install Apache on Ubuntu 18.04. Be sure that you have a virtual host file for your domain. This tutorial will use /etc/apache2/sites-available/example.com.conf as an example.
 
 
-
-
-[this link first](https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-18-04#step-5-%E2%80%94-setting-up-virtual-hosts-(recommended))
-
-[this link second](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-18-04)
-
-
 ### 1.1 Installing Certbot
 
 The first step to using Let's Encrypt to obtain an SSL certificate is to install the Certbot software on your server.
@@ -461,7 +454,7 @@ Apache Full (v6)           ALLOW       Anywhere (v6)
 
 ## 4. `Configure authentification keys in node`
 
-*All of these steps have been implimented in `experiment_setup/hello_world/app.js`. This is just a guide through that logic.* 
+All of these steps have been implimented in `experiment_setup/hello_world/app.js`. This is just a guide through that logic.
 
 Now that we've set up all these security protocols, we need to ensure that the node has permission to operate within them; running default http ports here, for example, would just result in an error. That is, node needs to be able to tell the server (firewall, apache, etc.) that it has permission to to operate freely. 
 
@@ -511,3 +504,6 @@ const io = socket_io(server)
 ```
 
 This should allow us to operate freely, even while our server is more secure. 
+
+
+Again, most of this is taken directly from [DigitalOcean's tutorials](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-18-04) but I've reorganized things for pedegogical reasons.
