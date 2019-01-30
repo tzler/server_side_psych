@@ -10,11 +10,11 @@
 
 First, set up your "droplet" following these [instructions](https://www.digitalocean.com/docs/droplets/how-to/create/). To follow along with this tutorial: 
 	
-- Distribution: Ubuntu 18.20  (most important) 
-- Size: $5 Month (1 GB / 1 CPU, 25 GB SSD disk, 1000 GB transfer) 
-- No backups
-- Storage center: San Francisco 
-- No additional options or SSH keys
+- Distribution: Ubuntu 18.04  (not optional to follow along with this tutorial)
+- Size: $5 Month (1 GB / 1 CPU, 25 GB SSD disk, 1000 GB transfer) (optional)
+- No backups (optional)
+- Storage center: San Francisco (optional)  
+- No additional options or SSH keys (optional) 
 	
 It takes a minute to initialize and then you'll get an email which has two pieces of information you'll need: 
 
@@ -32,7 +32,7 @@ Password: yOuRPasSWoRD
 With the information above, you want to log onto your server via the command line: 
 
 ```
-@ ssh root@SERVER.IP.ADDRESS
+$ ssh root@SERVER.IP.ADDRESS
 ```
 
 Say `yes` and paste `yOuRPasSWoRD` after copying it from the email, then follow the instructions  to create a new password. 
@@ -64,7 +64,7 @@ To add these privileges to our new user, we need to add the new user to the sudo
 As root, run this command to add your new user to the sudo group (substitute the highlighted word with your new user):
 
 ```
-$ usermod -aG sudo sammy
+$ usermod -aG sudo <you_user_name>
 ```
 
 Now, when logged in as your regular user, you can type sudo before commands to perform actions with superuser privileges.
@@ -105,7 +105,8 @@ nodejs -v
 
 ### 3.2 getting more recent versions 
 
-To get a more recent version of Node.js you can add the PPA (personal package archive) maintained by NodeSource. This will have more up-to-date versions of Node.js than the official Ubuntu repositories, and will allow you to choose between Node.js v6.x (supported until April of 2019), Node.js v8.x (the current LTS version, supported until December of 2019), Node.js v10.x (the second current LTS version, supported until April of 2021), and Node.js v11.x (the current release, supported until June 2019).
+To get a more recent version of Node.js you can add the PPA (personal package archive) maintained by NodeSource. This will have more up-to-date versions of Node.js than the official Ubuntu repositories. We'll use node 10.x
+
 
 First, install the PPA in order to get access to its contents. From your home directory, use curl to retrieve the installation script for your preferred version, making sure to replace 10.x with your preferred version string (if different):
 
@@ -122,7 +123,7 @@ $ sudo bash nodesource_setup.sh
 
 The PPA will be added to your configuration and your local package cache will be updated automatically. After running the setup script from Nodesource, you can install the Node.js package in the same way you did above:
 ```
-sudo apt install nodejs
+$ sudo apt install nodejs
 ```
 To check which version of Node.js you have installed after these initial steps, type:
 
@@ -153,13 +154,13 @@ Ubuntu's official package repositories include an up-to-date version of MongoDB,
 First, update the packages list to have the most recent version of the repository listings:
 
 ```
-sudo apt update
+$ sudo apt update
 ```
 
 Now install the MongoDB package itself:
 
 ```
-sudo apt install -y mongodb
+$ sudo apt install -y mongodb
 ```
 
 This command installs several packages containing the latest stable version of MongoDB, along with helpful management tools for the MongoDB server. The database server is automatically started after installation.
@@ -173,7 +174,7 @@ The installation process started MongoDB automatically, but let's verify that th
 First, check the service's status:
 
 ```
-sudo systemctl status mongodb
+$ sudo systemctl status mongodb
 ```
 
 You'll see this output:
@@ -222,36 +223,36 @@ MongoDB installs as a systemd service, which means that you can manage it using 
 
 To verify the status of the service, type:
 ```
-sudo systemctl status mongodb
+$ sudo systemctl status mongodb
 ```
 
 You can stop the server anytime by typing:
 
 ```
-sudo systemctl stop mongodb
+$ sudo systemctl stop mongodb
 ```
 To start the server when it is stopped, type:
 
 ```
-sudo systemctl start mongodb
+$ sudo systemctl start mongodb
 ```
 
 You can also restart the server with a single command:
 
 ```
-sudo systemctl restart mongodb
+$ sudo systemctl restart mongodb
 ```
 
 By default, MongoDB is configured to start automatically with the server. If you wish to disable the automatic startup, type:
 
 ```
-sudo systemctl disable mongodb
+$ sudo systemctl disable mongodb
 ```
 
 It's just as easy to enable it again. To do this, use:
 
 ```
-sudo systemctl enable mongodb
+$ sudo systemctl enable mongodb
 ```
 
 ## 5. node test

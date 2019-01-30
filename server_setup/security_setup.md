@@ -20,6 +20,14 @@ Setting up a SSL certificate is straightforward from the command line on your dr
 - An A record with `www.example.com` pointing to your server's public IP address.
 - Apache installed by following How To Install Apache on Ubuntu 18.04. Be sure that you have a virtual host file for your domain. This tutorial will use /etc/apache2/sites-available/example.com.conf as an example.
 
+
+
+
+[this link first](https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-18-04#step-5-%E2%80%94-setting-up-virtual-hosts-(recommended))
+
+[this link second](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-18-04)
+
+
 ### 1.1 Installing Certbot
 
 The first step to using Let's Encrypt to obtain an SSL certificate is to install the Certbot software on your server.
@@ -42,10 +50,10 @@ Certbot is now ready to use, but in order for it to configure SSL for Apache, we
 
 Certbot needs to be able to find the correct virtual host in your Apache configuration for it to automatically configure SSL. Specifically, it does this by looking for a ServerName directive that matches the domain you request a certificate for.
 
-You should have a VirtualHost block for your domain at `/etc/apache2/sites-available/<your_domain_name>.com.conf` with the ServerName directive already set appropriately.To check, open the virtual host file for your domain using nano or your favorite text editor:
+You should have a VirtualHost block for your domain at `/etc/apache2/sites-available/<your_domain_name>.com.conf` with the ServerName directive already set appropriately.To check, open the virtual host file for your domain using vi or your favorite text editor:
 
 ```
-$ sudo nano /etc/apache2/sites-available/example.com.conf
+$ sudo vi /etc/apache2/sites-available/example.com.conf
 ```
 
 Find the existing ServerName line. It should look like this:
@@ -250,7 +258,7 @@ Authentication is enabled in the mongod.conf file. Once we enable it and restart
 Let's open the configuration file with vi (or whatever text editor you'd prefer):
 
 ```
-$ sudo vi /etc/mongod.conf
+$ sudo vi /etc/mongodb.conf
 ```
 
 In the `#security` section, we'll remove the hash in front of security to enable the stanza. Then we'll add the authorization setting. When we're done, the lines should look like the excerpt below:
@@ -267,20 +275,28 @@ Note that the “security” line has no spaces at the beginning, and the “aut
 Once we've saved and exited the file, we'll restart the daemon:
 
 ```
-sudo systemctl restart mongod
+$ sudo systemctl restart mongodb.service
 ```
 
 If we've made an error in the configuration, the dameon won't start. Since systemctl doesn't provide output, we'll use its status option to be sure that it did:.
 
 ```
-sudo systemctl status mongod
+$ sudo systemctl status mongodb.service
 ```
 
 If we see Active: active (running) in the output and it ends with something like the text below, we can be sure the restart command was successful:
 
 ```
-Output
-Jan 23 19:15:42 MongoHost systemd[1]: Started High-performance, schema-free document-oriented database.
+● mongodb.service - An object/document-oriented database
+   Loaded: loaded (/lib/systemd/system/mongodb.service; enabled; vendor preset: enabled)
+   Active: active (running) since Wed 2019-01-30 04:57:30 UTC; 10s ago
+     Docs: man:mongod(1)
+ Main PID: 12240 (mongod)
+    Tasks: 23 (limit: 4915)
+   CGroup: /system.slice/mongodb.service
+           └─12240 /usr/bin/mongod --unixSocketPrefix=/run/mongodb --config /etc/mongodb.conf
+
+Jan 30 04:57:30 snail systemd[1]: Started An object/document-oriented database.
 ```
 
 Having verified the daemon is up, let's test authentication.
@@ -376,7 +392,7 @@ $ sudo ufw app list
 There are other ways of establishing the same firewall functionality, but these profiles are in a nice, human readable format. First let's enable ssh so we can continue logging onto the server (otherwise we'd be locked out!): 
 
 ```
-$ ufw allow OpenSSH
+$ sudo ufw allow OpenSSH
 ```
 And let's enable `Apache Full`, which supports https:
 
