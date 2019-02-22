@@ -256,11 +256,17 @@ $ sudo vi /etc/mongodb.conf
 
 In the `#security` section, we'll remove the hash in front of security to enable the stanza. Then we'll add the authorization setting. When we're done, the lines should look like the excerpt below:
 
+##### one possibility, if your file already has this format
 ```
  . . .
 security:
   authorization: "enabled"
  . . . 
+```
+### another possibility, if you file already has this format
+
+```
+auth = true
 ```
 
 Note that the “security” line has no spaces at the beginning, and the “authorization” line must be indented with two spaces
