@@ -200,7 +200,7 @@ Server has startup warnings:
 
 We're free to choose the name for the administrative user since the privilege level comes from the assignment of the role `root` (but see exception below). The database, admin designates where the credentials are stored. You can learn more about authentication in the MongoDB Security Authentication section.
 
-Set the username of your choice and be sure to pick your own secure password and substitute them in the command below:
+Set the username of your choice and be sure to pick your own secure password and substitute them in the command below. This will be the password you use `system wide`; If there will be multiple people running experiments on this server, they'll all need access to these keys. To make this most secure, you can use a random password generator to create both the username and the password.
 
 ```
 > use admin
@@ -233,14 +233,15 @@ Successfully added user: {
 
 Type 'exit' and press ENTER or use CTRL+C to leave the client.
 
-Once you're done, create a simple text file in `credentials/` called ` mongo_admin` that has the following information and json format: 
-
+Once you're done, create a simple text file in `credentials/` called `mongo_keys` (no `.txt` at the end!). This `credentials/mongo_keys` file will has to be in JSON format and will look like this:  
+ 
 ```
 {
-	"user": "<username>",
-	"pwd": "<password>"
+	"user": "<your_admin_name>",
+	"pwd": "<your_admin_password>"
 }
 ```
+
 
 At this point, our user will be allowed to enter credentials, but they will not be required to do so until we enable authentication and restart the MongoDB daemon.
 
@@ -256,11 +257,17 @@ $ sudo vi /etc/mongodb.conf
 
 In the `#security` section, we'll remove the hash in front of security to enable the stanza. Then we'll add the authorization setting. When we're done, the lines should look like the excerpt below:
 
+##### one possibility, if your file already has this format
 ```
  . . .
 security:
   authorization: "enabled"
  . . . 
+```
+### another possibility, if you file already has this format
+
+```
+auth = true
 ```
 
 Note that the “security” line has no spaces at the beginning, and the “authorization” line must be indented with two spaces
@@ -393,6 +400,12 @@ And let's enable `Apache Full`, which supports https:
 $ sudo ufw allow 'Apache Full'
 ```
 
+Now we enable the firewall with 
+
+```
+$ sudo ufw enable
+```
+
 We can get a list of the ports the firewall gives us access too with
 
 ```
@@ -452,13 +465,15 @@ Apache Full (v6)           ALLOW       Anywhere (v6)
 27017 (v6)                 ALLOW       Anywhere (v6)
 ```
 
+That's it! At this point you've completed the server setup, including all the security protocols that are going to enable you and your visitors to navigate the internet safely. 
+
+The validate that everything is running, and begin a brief tutorial on using these server side tools, start the tutorial in `experiment_setup/hello_world/README.md`. Everything that follows, below, is a step by step description of how the node environment is set up, using the credentials we've established. That is, below we walk through how to set up your `app.js` file that you'll be running on the server to make your experiment available to the world. 
+
 ## 4. `Configure authentification keys in node`
 
 All of these steps have been implimented in `experiment_setup/hello_world/app.js`. This is just a guide through that logic.
 
 Now that we've set up all these security protocols, we need to ensure that the node has permission to operate within them; running default http ports here, for example, would just result in an error. That is, node needs to be able to tell the server (firewall, apache, etc.) that it has permission to to operate freely. 
-
-
 
 We begin at the top of **`app.js`**, importing the modules we'll need (omitting modules not relevant for security purposes)
 
@@ -506,4 +521,7 @@ const io = socket_io(server)
 This should allow us to operate freely, even while our server is more secure. 
 
 
-Again, most of this is taken directly from [DigitalOcean's tutorials](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-18-04) but I've reorganized things for pedegogical reasons.
+Again, most of this is taken directly from [DigitalOcean's tutorials](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-18-04) but I've reorganized things for pedegogical reasons, and done some version control to make sure the instructions match Ubuntu 18.04.
+
+
+Great, now you're ready to set up your first fully secure node environment that is available to the rest of the internet! Please proceed to `experiment_setup/hello_world/README.md`

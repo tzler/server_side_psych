@@ -16,7 +16,7 @@ global.__base = __dirname + '/';
 // firewall permitted port we'll use
 const external_port = 8888;
 // location of ssl and mongo credentials
-const credentials = '../../credentials/'
+const credentials = '../credentials/'
 // extract relevant info from SSL key and certification
 const options = {
   key:  fs.readFileSync(credentials + "ssl_privatekey"), 
