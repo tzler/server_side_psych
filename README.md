@@ -1,13 +1,13 @@
-## An experiment-oriented introduction to server side infrastructure and programming
+## An experiment-oriented introduction to server infrastructure and programming
 
-Psychologists and cognitive neuroscientists increasingly rely on web-base crowdsourcing platforms (e.g. Amazon Mechanical Turk) to perform human behavioral experiments. Integrating these client side (i.e. browser-based) experiments with server side operations (e.g. reading and writing to a database) can be a powerful addition to this web-based experimental ecosystem. Here we walk through how to set up and integrate some of these server side tools into browser-based experiments. 
+Psychologists and cognitive neuroscientists increasingly rely on web-base crowdsourcing platforms (e.g. Amazon Mechanical Turk) to perform human behavioral experiments. Integrating these client side (i.e. browser-based) experiments with server side operations (e.g. reading and writing to a database) can be a powerful addition to this web-based experimental ecosystem. Here we walk through how to set up some of these server side tools, then integrate them into browser-based experiments. 
 
 #### Outline of experimental infrastructure: 
 
 - **`javascript`**: browser-based experimental implimentation
 - **`node.js`**: experimental "backend," manages client-server interactions 
 - **`mongodb`**: NoSQL database for data management
-- **`Digital Ocean "droplet"`**: cloud computing resource 
+- **`Digital Ocean "droplet"`**: cloud computing resource to use as a server  
 
 *PLACEHOLDER IMAGE:*
 <div style='text-align:center'>
