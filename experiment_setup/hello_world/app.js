@@ -14,7 +14,7 @@ global.__base = __dirname + '/';
 // SETUP TRAFFIC PERMISSIONS (MONGO/HTTPS/firewall)
 
 // firewall permitted port we'll use
-const external_port = 8888;
+const external_port = 8882;
 // location of ssl and mongo credentials
 const credentials = '../credentials/'
 // extract relevant info from SSL key and certification
@@ -80,7 +80,7 @@ var db_insert = function(text_data) {
     // convert string to a JSON object
     var formatted_data = { text_input: text_data}
     // establish which collection we're using (which is in a database)
-    var collection = client.db('test_database').collection('test_collection')
+    var collection = client.db('hello_world_database').collection('comments')
     // insert JSON object into database
     collection.insertOne(formatted_data, function(err, res) {
       // server side console log
@@ -98,7 +98,7 @@ var db_extract = function() {
     // verify connection
     assert.equal(null, err);
     // establish which collection we're using (which is in a database)
-    var collection = client.db('test_database').collection('test_collection')
+    var collection = client.db('hello_world_database').collection('comments')
     // extract a random document (JSON object) from collection
     collection.find().toArray(function(err, docs){
       // set index of random document 
