@@ -8,20 +8,26 @@ const assert = require('assert');
 const https = require('https');
 const socket_io = require('socket.io');
 
+// set database and collection we'll be using
+const database_name = 'hello_world_database'
+const collection_name = 'reaction_time'
+ 
 // set base directory across modules 
 global.__base = __dirname + '/';
 
 // SETUP TRAFFIC PERMISSIONS (MONGO/HTTPS/firewall)
 
 // firewall permitted port we'll use
-const external_port = 8888;
+const external_port = 8882;
 // location of ssl and mongo credentials
-const credentials = '../../credentials/'
+const credentials = '../credentials/'
 // extract relevant info from SSL key and certification
 const options = {
-  key:  fs.readFileSync(credentials + "ssl_privatekey"), 
-	cert: fs.readFileSync(credentials + "ssl_certificate")
+  key:  fs.readFileSync(credentials + "ssl_privatekey"),
+  cert: fs.readFileSync(credentials + "ssl_certificate")
 };
+
+
 // setup server-side port using credentials 
 const server = https.createServer(options,app)
 const io = socket_io(server)
@@ -85,7 +91,7 @@ var db_insert = function(trial_data) {
       var formatted_data = trial_data
     }
     // establish which collection we're using (which is in a database)
-    var collection = client.db('test_database').collection('test_collection')
+    var collection = client.db(database_name).collection(collection_name)
     // insert JSON object into database
     collection.insertOne(formatted_data, function(err, res) {
       // server side console log
@@ -105,7 +111,7 @@ var db_extract = function() {
     // verify connection
     assert.equal(null, err);
     // establish which collection we're using (which is in a database)
-    var collection = client.db('test_database').collection('test_collection')
+    var collection = client.db(database_name).collection(collection_name)
     // extract a random document (JSON object) from collection
     collection.find().toArray(function(err, docs){
       // set index of random document 
@@ -170,8 +176,8 @@ var handle_duplicate = function(req, res) {
 function get_previous_participation(worker_id, database, i_collection, resolve, reject){
   
   // MODIFY LATER
-  const database_name = 'test_database'
-  const collection_name = 'test_collection'
+  const database_name = 'hello_world_database'
+  const collection_name = 'reaction_time'
   
   mongo_client.connect(mongo_url, { useNewUrlParser: true }, function(err,client) {
     // verify connection

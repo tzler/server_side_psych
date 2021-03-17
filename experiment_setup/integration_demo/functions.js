@@ -2,7 +2,7 @@
     save_trial_to_database = function(trial_data){
       socket.emit('insert', trial_data)
     }
-
+    // example modified from https://www.jspsych.org/tutorials/rt-task/
     /* create timeline */
     var timeline = [];
 
@@ -44,9 +44,11 @@
       stimulus: '<div style="font-size:60px;">+</div>',
       choices: jsPsych.NO_KEYS,
       trial_duration: function(){
-        return jsPsych.randomization.sampleWithoutReplacement([250, 500, 750, 1000, 1250, 1500, 1750, 2000], 1)[0];
+        return jsPsych.randomization.sampleWithoutReplacement([500, 750, 1000, 1250, 1500, 1750, 2000], 1)[0];
       },
-      data: {test_part: 'fixation'}
+      data: {test_part: 'fixation'}, 
+      on_finish: function(data){ 
+        console.log(data) }
     }
 
     var test = {
@@ -55,8 +57,10 @@
       choices: ['f', 'j'],
       data: jsPsych.timelineVariable('data'),
       on_finish: function(data){
-        data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.correct_response);
-        console.log(data)
+        data.correct = data.response == data.correct_response;
+        //duration_data = jsPsych.data.get().last(1).select('trial_duration');
+        duration_data = jsPsych.data.getLastTrialData()
+        console.log('last', duration_data)
         save_trial_to_database(data)
       },
     }
@@ -64,7 +68,7 @@
     var test_procedure = {
       timeline: [fixation, test],
       timeline_variables: test_stimuli,
-      repetitions: 5,
+      repetitions: 10,
       randomize_order: true
     }
     timeline.push(test_procedure);
