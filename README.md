@@ -9,7 +9,7 @@ Psychologists and cognitive neuroscientists increasingly rely on web-base crowds
 - **`node.js`**: experimental "backend," manages client-server interactions 
 - **`javascript`**: browser-based experimental implimentation
 
-![image from https://robert-drummond.com/2013/04/25/a-node-js-application-on-the-amazon-cloud-part-1-installing-node-on-an-ec2-instance/](.schematic.png)
+![](.schematic.png)
 
 ### An extensible use case: experimental access to a server side database
 
