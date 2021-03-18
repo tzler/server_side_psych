@@ -4,15 +4,12 @@ Psychologists and cognitive neuroscientists increasingly rely on web-base crowds
 
 #### Outline of experimental infrastructure: 
 
-- **`javascript`**: browser-based experimental implimentation
-- **`node.js`**: experimental "backend," manages client-server interactions 
-- **`mongodb`**: NoSQL database for data management
 - **`Digital Ocean "droplet"`**: cloud computing resource to use as a server  
+- **`mongodb`**: NoSQL database for data management
+- **`node.js`**: experimental "backend," manages client-server interactions 
+- **`javascript`**: browser-based experimental implimentation
 
-*PLACEHOLDER IMAGE:*
-<div style='text-align:center'>
-	<img style='width: 80%' src="https://i1.wp.com/www.robert-drummond.com/wp-content/uploads/2013/05/web-app.png"></img>
-</div>
+![image from https://robert-drummond.com/2013/04/25/a-node-js-application-on-the-amazon-cloud-part-1-installing-node-on-an-ec2-instance/](.schematic.png)
 
 ### An extensible use case: experimental access to a server side database
 
