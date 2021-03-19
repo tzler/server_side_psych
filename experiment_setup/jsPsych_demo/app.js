@@ -8,24 +8,26 @@ const assert = require('assert');
 const https = require('https');
 const socket_io = require('socket.io');
 
-// set base directory across modules 
-global.__base = __dirname + '/';
-
 // set database and collection we'll be using
 const database_name = 'hello_world_database'
-const collection_name = 'reaction_time'
+const collection_name = 'jsPsych_demo'
+ 
+// set base directory across modules 
+global.__base = __dirname + '/';
 
 // SETUP TRAFFIC PERMISSIONS (MONGO/HTTPS/firewall)
 
 // firewall permitted port we'll use
-const external_port = 8888;
+const external_port = 8888; 
 // location of ssl and mongo credentials
 const credentials = '../credentials/'
 // extract relevant info from SSL key and certification
 const options = {
-  key:  fs.readFileSync(credentials + "ssl_privatekey"), 
-	cert: fs.readFileSync(credentials + "ssl_certificate")
+  key:  fs.readFileSync(credentials + "ssl_privatekey"),
+  cert: fs.readFileSync(credentials + "ssl_certificate")
 };
+
+
 // setup server-side port using credentials 
 const server = https.createServer(options,app)
 const io = socket_io(server)
@@ -33,7 +35,7 @@ const io = socket_io(server)
 const db_key = JSON.parse(fs.readFileSync(credentials + 'mongo_keys')); 
 // construct string from port and authentification data
 const mongo_url = `mongodb://${db_key.user}:${db_key.pwd}@localhost:27017`;
-console.log('mongo_url:', mongo_url)
+//console.log('mongo_url:', mongo_url)
 
 // DEFINE SERVER SIDE OPERATIONS
 
@@ -46,7 +48,8 @@ server.listen(external_port, function() {
 // listen to incoming requests
 app.get('/*', function (req, res) {
   // client response protocol
-	serve_file(req, res) 
+  // give everyone everything
+  serve_file(req, res) 
 });
 
 // protocol for returning files to client
@@ -54,7 +57,7 @@ var serve_file = function(req, res) {
   // extract name of file requested
   var file_name = req.params[0];
    // server side console log
-  console.log('\t :: Express :: file requested: ' + file_name);
+  console.log('\t :: express :: file requested: ' + file_name);
   // return file to client
   return res.sendFile(file_name, {root: __base});
 };
@@ -76,13 +79,17 @@ io.on('connection', function (socket) {
 });
 
 // insert into database function
-var db_insert = function(text_data) {
+var db_insert = function(trial_data) {
   // connect to mongo server
   mongo_client.connect(mongo_url, { useNewUrlParser: true }, function(err,client) {
     // verify connection
     assert.equal(null, err);
-    // convert string to a JSON object
-    var formatted_data = { text_input: text_data}
+    if (typeof(trial_data) == 'string') { 
+      // convert string to a JSON object
+      var formatted_data = { text_input: trial_data}
+    } else {
+      var formatted_data = trial_data
+    }
     // establish which collection we're using (which is in a database)
     var collection = client.db(database_name).collection(collection_name)
     // insert JSON object into database
@@ -94,6 +101,8 @@ var db_insert = function(text_data) {
     })
   });
 };
+
+
 
 // extract from database function
 var db_extract = function() {

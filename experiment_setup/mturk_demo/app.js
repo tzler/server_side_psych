@@ -10,8 +10,11 @@ const socket_io = require('socket.io');
 
 // set database and collection we'll be using
 const database_name = 'hello_world_database'
-const collection_name = 'reaction_time'
- 
+const collection_name = 'mturk_demo'
+
+// your worker ID--so can troubleshoot your HIT :) 
+const allowed_to_repeat = ['A33F2FVAMGJDGG'] 
+
 // set base directory across modules 
 global.__base = __dirname + '/';
 
@@ -47,8 +50,7 @@ server.listen(external_port, function() {
 
 // listen to incoming requests
 app.get('/*', function (req, res) {
-  // client response protocol
-	//serve_file(req, res) 
+  // server distribution protocol
   initialization(req, res) 
 });
 
@@ -128,43 +130,34 @@ var initialization = function( req, res ) {
 
   // extract from request to server (only returns worker_id for first ping from mturk)
   var worker_id = req.query.workerId;
-  // the databse you want search and save things within
-
-  // let some people pass no matter what -- e.g. yourself
-  var let_pass = ['A33F2FVAMGJDGG', 'other_worker_ids'].indexOf(worker_id) > -1
-
+  // let some people pass no matter what--e.g. you when troublishooting code :) 
+  var let_pass = allowed_to_repeat.indexOf(worker_id) > -1
+  console.log('LET PASS', let_pass) 
+  
   // worker_id is undefined if experiment is in preview mode -- or not on mturk
   if (worker_id != undefined){
-
+    
     // extract collection from mturk url--flexible, but ideosyncratic to submission protocol!
     collection = req.originalUrl.slice(1, req.originalUrl.indexOf('index.html')-1)
 
     // optional: query the database and wait for the promise -- it could take a while
     var mongo_query = new Promise( function (resolve, reject ) {
-      get_previous_participation(id, database, collection, resolve, reject)
+      get_previous_participation(worker_id, database_name, collection_name, resolve, reject)
     })
-
     // wait for the promise untill deciding if subjects should participate
     mongo_query.then( function ( participation) {
-
-        if (! participation | let_pass ) {
-
-          // update parameters for the particular experiment we're in
-          //if (collection == 'sr_buttons' | collection == 'stimulus_response') {
-          //  utils.determine_set_size()}
-
-          // serve experiment
-          return serve_file( req, res )
-
-        } else {
-          return handle_duplicate( req, res )
-        }
+        
+      if (! participation | let_pass ) {
+        // serve experiment
+        return serve_file( req, res )
+      } else {
+        // send duplicate workers to another web page
+        return handle_duplicate( req, res )
+      }
     })
   // let everyone see instructions before accepting the HIT (i.e. worker_id is undefined)
   } else {
-
     return serve_file(req, res);
-
   }
 }
 
@@ -174,10 +167,6 @@ var handle_duplicate = function(req, res) {
 };
 
 function get_previous_participation(worker_id, database, i_collection, resolve, reject){
-  
-  // MODIFY LATER
-  const database_name = 'hello_world_database'
-  const collection_name = 'reaction_time'
   
   mongo_client.connect(mongo_url, { useNewUrlParser: true }, function(err,client) {
     // verify connection

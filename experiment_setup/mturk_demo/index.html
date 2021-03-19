@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Demo Experiment</title>
+    <title>basic mturk example</title>
     <script src="jsPsych/jspsych.js"></script>
+    <script src="jsPsych/plugins/jspsych-survey-text.js"></script>
     <script src="jsPsych/plugins/jspsych-html-keyboard-response.js"></script>
     <script src="jsPsych/plugins/jspsych-image-keyboard-response.js"></script>
+    <script src="jsPsych/plugins/jspsych-preload.js"></script>
     <link href="jsPsych/css/jspsych.css" rel="stylesheet" type="text/css"></link>
     <script type="text/javascript" src="./socket.io/socket.io.js"></script>
-    <script src='functions.js'></script>
+    <script src="utils/client_server_connection.js"></script>
+    <script src="utils/mturk_functions.js"></script>
+    <script src='task.js'></script>
   </head>
   <body></body>
 </html>

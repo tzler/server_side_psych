@@ -42,13 +42,13 @@ We initiate this connection by using the header in the client's HTML. Most commo
 
 Because app.js is running in the same folder as index.html, we direct the client to the current working directory with `./socket.io/socket.io.js`, but could also move up the directory using `../socket.io/socket.io.js`, etc. 
 
-Next, we just need one line of code to connect this node-based socket to client side javascript. You can do this as we have in `functions.js:1` or within the `<script>` tag in your html file: 
+Next, we just need one line of code to connect this node-based socket to client side javascript. In the spirit of being minimilly invasive, we've done this by adding the following line of code into `demo-simple-rt-task.html:18` (i.e. at line 18): 
 
 ```
 socket = io.connect();
 ```
 
-Now we can create a function to we can use in javascript that will call this node process (`functions.js:2-4`): 
+Now we can create a javacsript-based function that will call this node process (`demo-simple-rt-task.html:19-20`): 
 
 ```
 save_trial_to_database = function(trial_data){
@@ -58,7 +58,7 @@ save_trial_to_database = function(trial_data){
 
 The function `save_trial_to_database()` sends `trial_data` to the server. node is listening for the `insert` tag and has a pre-defined protocol for inserting that data into the database. 
 
-We can call this function whenever we'd like; we've chosen to do this at the end of each trial. In jsPsych this can be implimented by modifying the `on_finish` callback function (`functions.js:57-61`), which is simply:  
+We can call this function whenever we'd like; we've chosen to do this at the end of each trial. In jsPsych this can be implimented by modifying the `on_finish` callback function (`demo-simple-rt-task.html:91`), which is simply:  
 
 ```
 on_finish: function(data){
@@ -75,3 +75,19 @@ $ node app.js
 ```
 
 and enter `https://<your_domain_name>:8888/index.html` into your browser. Throughout the experiment you can see some of the server and client side processes printed for clarity, in the terminal and console, respectively.
+
+Of course, it's seldom the case that you'll want to keep these terminals open, manually, while you're collecting data. [tmux](https://linuxize.com/post/getting-started-with-tmux/) can be really usefull here, and it should already be installed on the server. We'll use tmux to 1) open a tmux session, 2) run some code (i.e. `node app.js`), then 3) detaching from the session. This ensures that the code will continue running even if we get disconnected from the server. And at any point we can also jump back in (i.e. reattach) to that session 
+
+Let's start by opening up a session---and let's be explict and number this session (`0`), in case we ever want to create multiple tmux sessions: 
+
+```
+$ tmux attach-session -t 0
+```
+
+The terminal aesthetics should change color. Now you can enter 
+
+```
+$ node app.js
+```
+
+You can stay with this window open if you want, or detach with `Ctrl-b` + `d`. At any point you can reattach to the session and see what's going on. Or you you're free to detach and continue working in this terminal. Critically, you can detach from your session, log off of the server, and then go do something else for the day while your server stays open in the background :) 

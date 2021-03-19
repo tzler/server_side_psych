@@ -5,3 +5,4 @@ package.json
 *.swp
 jsPsych/
 .DS_Store
+jspsych-6.3.0/
