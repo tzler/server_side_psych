@@ -1,6 +1,6 @@
-## Integrating server side tools with a demo experiment
+## Integrating server side tools with a more practical applications: mturk data collection
 
-This folder contains scripts that integrate the read-write functionality from `hellow_world` within the`jsPsych_demo` framework. Specifically, with someone logs into the experiment, the server checks whether they have completed any trials in this experiment previously; if they have, they are redirected to a "You can't continue" web page that politely explains that they cant perform this experiment again. If a subject _hasn't_ performed this experiment before, the experiment proceeds just like `jsPsych_demo`, saving their trial-by-trial data to the server. 
+This folder contains scripts that integrate the read-write functionality from `hello_world` within the`jsPsych_demo` framework. Specifically, with someone logs into the experiment, the server checks whether they have completed any trials in this experiment previously; if they have, they are redirected to a "You can't continue" web page that politely explains that they cant perform this experiment again. If a subject _hasn't_ performed this experiment before, the experiment proceeds just like `jsPsych_demo`, saving their trial-by-trial data to the server. 
 
 First let's go over the things thave haven't changed much between this folder and `jsPsych_demo`. Again, we use the [demo reaction time experiment](https://www.jspsych.org/tutorials/rt-task/) implimented in **`jsPsych`**. Again, you'll need to go through all the instructions that are already outlined in the `jsPsych_demo/README`. While the code's function is unchanged, we've made some design changes, factoring out different javascript-based functions from the the html. Now we have a single, simple `index.html` file that contains pointers to all the relevant code that's used for different parts of the experiment. That is, in addition to having an html file that pulled together `jsPsych` and `socket.io` libraries, now we've factored out  
 
@@ -50,5 +50,25 @@ Here, `initialization():129` first checks whether there is a worker ID. This wil
 If the server detects an mturk worker ID, and it checks whether they have already performed this experiment `get_previous_participation():169`: this function searches within the given database and collection for any instance of this participants worker ID. If their worker ID is not found, they are again allowed to proceed. If their worker ID is found, `handle_duplicate():169` redirects the participant to a different page where they are informed why they won't be able to complete this HIT, reminded that they can reach out to the experimenter if they believe they have been brought here in error, and kindly instructed to "return the HIT" so that other participants can complete this experiment.
 
 
+## Submiting experiments to MTURK
 
+While you can use your preferred method, we've included a simple script that will let you submit experiments on mturk (in batches of nine :wink:). In order to use this script to submit experiments, on your account, you'll need to create a json file named `aws_keys.json` that has your AWS credentials formatted in this way: 
 
+```
+{
+"access_key_id": "XXXXXXXXXXXXXXXXX",
+"secret_access_key" :"YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
+}
+```
+
+You'll need to put that file here `server_side_psych/experiment_setup/credentials/aws_keys.json`. Then if you want to submit 3 sandbox HITs at 7$ each, for example, just run the following code in `utils/': 
+
+```
+$ python submit_hit.py sandbox 2 7
+```
+
+That will put a short lived experiment in the sandbox. If you'd like, you can allow yourself to not be excluded from the experiment once you've already completed in, by adding a string with your worker ID in `app.js:16`: 
+
+```
+const allowed_to_repeat = ['YOUR_WORKER_ID']
+```
