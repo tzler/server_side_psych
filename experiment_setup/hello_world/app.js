@@ -12,8 +12,8 @@ const socket_io = require('socket.io');
 global.__base = __dirname + '/';
 
 // set database and collection we'll be using
-const database_name = 'hello_world_database'
-const collection_name = 'reaction_time'
+const database_name = 'tutorial'
+const collection_name = 'hello_world'
 
 // SETUP TRAFFIC PERMISSIONS (MONGO/HTTPS/firewall)
 

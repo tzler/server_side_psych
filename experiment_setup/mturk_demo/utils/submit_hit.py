@@ -18,7 +18,7 @@ port_number = '8888'
 experiment_script = 'index.html'
 n_hours_to_complete_hit = .1
 n_hours_to_accept_hit = .1
-credentials= '/home/tyler/perirhinal/tasks/credentials/aws_keys.json'
+credentials= '../../credentials/aws_keys.json'
 
 def set_path_to_experiment(experiment_script): 
     path = os.path.realpath('..')

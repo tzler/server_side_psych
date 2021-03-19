@@ -9,7 +9,7 @@ const https = require('https');
 const socket_io = require('socket.io');
 
 // set database and collection we'll be using
-const database_name = 'hello_world_database'
+const database_name = 'tutorial'
 const collection_name = 'jsPsych_demo'
  
 // set base directory across modules 

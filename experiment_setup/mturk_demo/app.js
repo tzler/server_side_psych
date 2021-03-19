@@ -9,11 +9,8 @@ const https = require('https');
 const socket_io = require('socket.io');
 
 // set database and collection we'll be using
-const database_name = 'hello_world_database'
+const database_name = 'tutorial'
 const collection_name = 'mturk_demo'
-
-// your worker ID--so can troubleshoot your HIT :) 
-const allowed_to_repeat = ['A33F2FVAMGJDGG'] 
 
 // set base directory across modules 
 global.__base = __dirname + '/';
@@ -30,6 +27,12 @@ const options = {
   cert: fs.readFileSync(credentials + "ssl_certificate")
 };
 
+
+// your worker ID--so can troubleshoot your HIT :) 
+const my_worker_id = fs.readFileSync(credentials + "my_worker_id", 'utf8')
+//const my_worker_id = require(credentials + 'my_worker_id')
+const allowed_to_repeat = [my_worker_id.slice(0, -1)] 
+// OR YOU CAN JUST PASTE YOU WORKER ID DIRECTLY 
 
 // setup server-side port using credentials 
 const server = https.createServer(options,app)
@@ -132,8 +135,8 @@ var initialization = function( req, res ) {
   var worker_id = req.query.workerId;
   // let some people pass no matter what--e.g. you when troublishooting code :) 
   var let_pass = allowed_to_repeat.indexOf(worker_id) > -1
-  console.log('LET PASS', let_pass) 
-  
+  console.log('LET PASS', let_pass, worker_id, allowed_to_repeat) 
+    
   // worker_id is undefined if experiment is in preview mode -- or not on mturk
   if (worker_id != undefined){
     
