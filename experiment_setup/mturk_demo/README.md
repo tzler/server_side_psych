@@ -1,6 +1,6 @@
-## Integrating server side tools with a demo experiment
+## Integrating server side tools with a more practical applications: mturk data collection
 
-This folder contains scripts that integrate the read-write functionality from `hellow_world` within the`jsPsych_demo` framework. Specifically, with someone logs into the experiment, the server checks whether they have completed any trials in this experiment previously; if they have, they are redirected to a "You can't continue" web page that politely explains that they cant perform this experiment again. If a subject _hasn't_ performed this experiment before, the experiment proceeds just like `jsPsych_demo`, saving their trial-by-trial data to the server. 
+This folder contains scripts that integrate the read-write functionality from `hello_world` within the`jsPsych_demo` framework. Specifically, with someone logs into the experiment, the server checks whether they have completed any trials in this experiment previously; if they have, they are redirected to a "You can't continue" web page that politely explains that they cant perform this experiment again. If a subject _hasn't_ performed this experiment before, the experiment proceeds just like `jsPsych_demo`, saving their trial-by-trial data to the server. 
 
 First let's go over the things thave haven't changed much between this folder and `jsPsych_demo`. Again, we use the [demo reaction time experiment](https://www.jspsych.org/tutorials/rt-task/) implimented in **`jsPsych`**. Again, you'll need to go through all the steps  outlined in the `jsPsych_demo/README`, i.e.:  
 
@@ -122,6 +122,7 @@ If the server detects an mturk worker ID, and it checks whether they have alread
 
 ## Collecting and saving MTURK-related information across the experiment. 
 
+<<<<<<< HEAD
 Now, we still want to save this data on every trial. Let's start by looking at how we do this, which is relatively straightforward: using functions defined in `mturk_functions.js`, we collect the mturk data in just a few lines of code, then send it to the server, just like we did in the `jsPsych` demo. Specifically, these lines of code are in `task.js:68-71`: 
 
 ```
@@ -143,3 +144,27 @@ jsPsych.init({
 ```
 
 Because we've factored out the mturk and socket functions, adding these several lines of code is all you need to do to make any javascript-based experiments compatible with the server-side resources we've been developing, and now the mturk compatibility. 
+=======
+## Submiting experiments to MTURK
+
+While you can use your preferred method, we've included a simple script that will let you submit experiments on mturk (in batches of nine :wink:). In order to use this script to submit experiments, on your account, you'll need to create a json file named `aws_keys.json` that has your AWS credentials formatted in this way: 
+
+```
+{
+"access_key_id": "XXXXXXXXXXXXXXXXX",
+"secret_access_key" :"YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
+}
+```
+
+You'll need to put that file here `server_side_psych/experiment_setup/credentials/aws_keys.json`. Then if you want to submit 3 sandbox HITs at 7$ each, for example, just run the following code in `utils/': 
+
+```
+$ python submit_hit.py sandbox 2 7
+```
+
+That will put a short lived experiment in the sandbox. If you'd like, you can allow yourself to not be excluded from the experiment once you've already completed in, by adding a string with your worker ID in `app.js:16`: 
+
+```
+const allowed_to_repeat = ['YOUR_WORKER_ID']
+```
+>>>>>>> e351b7e8d7e070ebc7573a3c9b3bc560ecb7b04c
