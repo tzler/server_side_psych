@@ -2,14 +2,14 @@
 
 This folder contains scripts and illustrate how to adapt your own experiments to utilize the server side functions contained in this repository. 
 
-There are only several lines of code that need to be added to your current scripts. All of these details below use a [demo reaction time experiment](https://www.jspsych.org/tutorials/rt-task/) implimented in **`jsPsych`**. For clarity, we've factored out the javascript from the html so we have `index.html` and `functions.js` files instead of just one file containing everything. 
+There are only several lines of code that need to be added to your current scripts. To illustrate this, we've taken an minimal approach to modifying a [demo reaction time experiment](https://www.jspsych.org/tutorials/rt-task/) implimented in a popular javascript-based library for designing experiments (**`jsPsych`**). 
 
 ### 1. Installing dependencies in directory
 
 First, let's clone the jsPsych repository: 
 
 ```
-$ git clone https://github.com/jspsych/jsPsych.git jsPsych
+$ git clone https://github.com/jspsych/jsPsych.git jspsych-6.3.0
 ```
 
 initialize our node package manager in this directory: 
@@ -90,4 +90,9 @@ The terminal aesthetics should change color. Now you can enter
 $ node app.js
 ```
 
-You can stay with this window open if you want, or detach with `Ctrl-b` + `d`. At any point you can reattach to the session and see what's going on. Or you you're free to detach and continue working in this terminal. Critically, you can detach from your session, log off of the server, and then go do something else for the day while your server stays open in the background :) 
+You can stay with this window open if you want, or detach with `Ctrl-b` + `d`. At any point you can reattach to the session and see what's going on. Or you you're free to detach and continue working in this terminal. Critically, you can detach from your session, log off of the server, and then go do something else for the day while your server stays open in the background :)
+
+
+```
+$ https://stanfordmemorylab.com:8888/index.html
+``` 
