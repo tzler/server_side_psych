@@ -100,7 +100,8 @@ A33F2FVXMGJDMM
 
 
 
-## Verifying participation by quering the database with `workerId` 
+## Verifying participation by quering the database with "workerId" 
+
 
 Great. Let's reiterate our general plan: 1) submit an experiment (a HIT) onto the sandbox, 2) each time someone (probably just you for now :)) decides to perform the experiment, you collecing each their `workerID` as well as other mturk-related data, 3) you check whether they have already participanted in this study, 4) if they _haven't_ the experiment proceeds as normal, if they _have_ they get redirected. 
 
@@ -122,7 +123,6 @@ If the server detects an mturk worker ID, and it checks whether they have alread
 
 ## Collecting and saving MTURK-related information across the experiment. 
 
-<<<<<<< HEAD
 Now, we still want to save this data on every trial. Let's start by looking at how we do this, which is relatively straightforward: using functions defined in `mturk_functions.js`, we collect the mturk data in just a few lines of code, then send it to the server, just like we did in the `jsPsych` demo. Specifically, these lines of code are in `task.js:68-71`: 
 
 ```
@@ -144,8 +144,9 @@ jsPsych.init({
 ```
 
 Because we've factored out the mturk and socket functions, adding these several lines of code is all you need to do to make any javascript-based experiments compatible with the server-side resources we've been developing, and now the mturk compatibility. 
-=======
+
 ## Submiting experiments to MTURK
+
 
 While you can use your preferred method, we've included a simple script that will let you submit experiments on mturk (in batches of nine :wink:). In order to use this script to submit experiments, on your account, you'll need to create a json file named `aws_keys.json` that has your AWS credentials formatted in this way: 
 
@@ -167,4 +168,3 @@ That will put a short lived experiment in the sandbox. If you'd like, you can al
 ```
 const allowed_to_repeat = ['YOUR_WORKER_ID']
 ```
->>>>>>> e351b7e8d7e070ebc7573a3c9b3bc560ecb7b04c
