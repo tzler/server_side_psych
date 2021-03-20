@@ -2,6 +2,11 @@
 
 This folder contains scripts that integrate the read-write functionality from `hello_world` within the`jsPsych_demo` framework. Specifically, with someone logs into the experiment, the server checks whether they have completed any trials in this experiment previously; if they have, they are redirected to a "You can't continue" web page that politely explains that they cant perform this experiment again. If a subject _hasn't_ performed this experiment before, the experiment proceeds just like `jsPsych_demo`, saving their trial-by-trial data to the server. 
 
+Because this is designed for mturk, you'll need two things 
+
+- your AWS credentials--i.e. your `access_key_id` and  `secret_access_key`
+- your mturk `workerId`
+ 
 First let's go over the things thave haven't changed much between this folder and `jsPsych_demo`. Again, we use the [demo reaction time experiment](https://www.jspsych.org/tutorials/rt-task/) implimented in **`jsPsych`**. Again, you'll need to go through all the steps  outlined in the `jsPsych_demo/README`, i.e.:  
 
 ```
@@ -44,7 +49,7 @@ Why go through all this trouble? A bunch of reasons. First, it makes it easier t
 
 Aside from these design decisions, the big difference is that now we're getting ready to interface with mturk. We need to set up a couple of things in preparation. 
 
-## Setting MTURK dependencies
+## Setting up MTURK dependencies
 
 We've included a simple script that will let you submit experiments on mturk (in batches of nine :wink:), though you're certainly welcome to use any scripts you like for this. To use the scripts we've offered, you'll need to link up with your amazon requester (i.e. AWS) account. To do this, create a json file named `aws_keys.json` that has your AWS credentials using this formatted : 
 
@@ -57,51 +62,15 @@ We've included a simple script that will let you submit experiments on mturk (in
 
 You'll need to put that file here: `server_side_psych/experiment_setup/credentials/aws_keys.json`. Then you can submit hits through the command line in the following way; Let's say you want to submit 3 sandbox HITs at 7$ each, just run the following code after you `cd` into the `utils/': 
 
-```
-$ python submit_hit.py sandbox 3 7
-```
-
-
-It wil ask you to confirm 
-
-```
-Create 3 sandbox HITs for $7 each?
-
-
-(yes/no)
-```
-
-After typing `yes` and pressing `ENTER` the script will generate a short lived experiment in the sandbox. It was also  print out the following: 
-
-```
-HIT_ID: 3IKMEYR0LYBQV7KGG5GLI4SBEFTK2D
-which you can see here: https://workersandbox.mturk.com/mturk/preview?groupId=3T1XT3I8SZK70AASREU8F5MMJ0K6HO
-```
-
-You can copy and paste the URL above to access the experiment in the sandbox. 
-
-
 Now, the functionality of the server here will be to redirect participants that have already encoutered the experiment. This means it will also prohibit you from viewing the experiment more than once. Because you'll typically be troubleshooting your code before launching it, we've made sure that you can give yourself the ability to see the experiment multiple times. To do this, you'll need to know your mturk `workerId`. 
 
-If you don't know your workerId, it's in the upper left-hand corner of the browser when you're logged onto the sandbox. 
-
-
-There are two ways you can give yourself access to experiments, even if you've already completed them (this works for anyone, not just you!). First, you can add a string with your worker ID in `app.js:16`: 
-
-```
-const allowed_to_repeat = ['<YOUR_WORKER_ID>']
-```
-
-Second, you can save a file in the credentials folder that contains _only_ your workerId--no quotes, no labels. The file should be named `my_worker_id` and look like this: 
+If you don't know your workerId, it's in the upper left-hand corner of the browser when you're logged onto the sandbox. Save a file in the credentials folder that contains _only_ your workerId--no quotes, no labels. The file should be named `my_worker_id` and look like this:
 
 ```
 A33F2FVXMGJDMM
 ```
 
-
-
 ## Verifying participation by quering the database with "workerId" 
-
 
 Great. Let's reiterate our general plan: 1) submit an experiment (a HIT) onto the sandbox, 2) each time someone (probably just you for now :)) decides to perform the experiment, you collecing each their `workerID` as well as other mturk-related data, 3) you check whether they have already participanted in this study, 4) if they _haven't_ the experiment proceeds as normal, if they _have_ they get redirected. 
 
@@ -147,24 +116,26 @@ Because we've factored out the mturk and socket functions, adding these several 
 
 ## Submiting experiments to MTURK
 
-
-While you can use your preferred method, we've included a simple script that will let you submit experiments on mturk (in batches of nine :wink:). In order to use this script to submit experiments, on your account, you'll need to create a json file named `aws_keys.json` that has your AWS credentials formatted in this way: 
-
-```
-{
-"access_key_id": "XXXXXXXXXXXXXXXXX",
-"secret_access_key" :"YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
-}
-```
-
-You'll need to put that file here `server_side_psych/experiment_setup/credentials/aws_keys.json`. Then if you want to submit 3 sandbox HITs at 7$ each, for example, just run the following code in `utils/': 
+Then if you want to submit 3 sandbox HITs at 7$ each, for example, just run the following code in `utils/': 
 
 ```
-$ python submit_hit.py sandbox 2 7
+$ python submit_hit.py sandbox 3 7
 ```
 
-That will put a short lived experiment in the sandbox. If you'd like, you can allow yourself to not be excluded from the experiment once you've already completed in, by adding a string with your worker ID in `app.js:16`: 
+It wil ask you to confirm 
 
 ```
-const allowed_to_repeat = ['YOUR_WORKER_ID']
+Create 3 sandbox HITs for $7 each?
+
+
+(yes/no)
 ```
+
+After typing `yes` and pressing `ENTER` the script will generate a short lived experiment in the sandbox. It was also  print out the following: 
+
+```
+HIT_ID: 3IKMEYR0LYBQV7KGG5GLI4SBEFTK2D
+which you can see here: https://workersandbox.mturk.com/mturk/preview?groupId=3T1XT3I8SZK70AASREU8F5MMJ0K6HO
+```
+
+You can copy and paste the URL above to access the experiment in the sandbox! 
