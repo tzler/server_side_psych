@@ -1,4 +1,8 @@
-credentials/
+aws_keys.json  
+mongo_keys  
+my_worker_id  
+ssl_certificate  
+ssl_privatekey
 node_modules/
 package-lock.json
 package.json
