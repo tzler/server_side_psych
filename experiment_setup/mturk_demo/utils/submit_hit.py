@@ -1,133 +1,154 @@
 """
-Take user inputs (n_hits, reward) to generate a new hits in batches of less than 10.
+Take user inputs (platform, n_hits, payment) to generate a new hits in batches of less than 10. 
 
-Useful reference: 
+Useful references for the code used to generate this scrip: 
+    General format for boto3 mturk interface
     - https://github.com/aws-samples/mturk-code-samples/blob/master/Python/CreateHitSample.py
+    Creating the experiment from an "external question"--i.e. just sending participants to the website on our server
+    - https://stackoverflow.com/questions/46692234/how-to-submit-mechanical-turk-externalquestions-with-boto3
+    Qualifications formatting examples/guidelines
+    - https://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_QualificationRequirementDataStructureArticle.html
+
 """
 from __future__ import print_function
 import boto3
-from boto.mturk.question import ExternalQuestion
-import boto.mturk.qualification as mtqu
 from dateutil.parser import *
 import numpy as np
 import sys, os, datetime 
 import json, math
 
-#param_location = '/home/tyler/perirhinal/tasks/high-throughput_data_collection/params.js'
-port_number = '8888'
-experiment_script = 'index.html'
-n_hours_to_complete_hit = .1
-n_hours_to_accept_hit = .1
-credentials= '../../credentials/aws_keys.json'
+def get_user_inputs(): 
 
-def set_path_to_experiment(experiment_script): 
-    path = os.path.realpath('..')
-    node_directory = 'tasks/' 
-    experiment_directory = path[path.find(node_directory) + len(node_directory):]
-    node_path_to_experiment = os.path.join(experiment_directory, experiment_script) 
-    return node_path_to_experiment
+    # check input from command line
+    if len(sys.argv) < 3:
+        # if no enough arguments, send info about calling this function
+        sys.exit("""
+        usage for either sandbox or live:\n
+            $ python submit_hit.py sandbox <n_hits_per_task> <amount> 
+            $ python submit_hit.py live <n_hits_per_task> <amount>\n""")
 
-def extract_values_from_params( param_file ):
-    """ generic script to extract information from js formatted params file""" 
-    contents = open( param_file, 'r' ).readlines()
-    params = {} 
-    for i_line in contents: 
-        line = i_line.replace(' ', '') 
-        i_key = line[:line.find(':')]
-        i_value = line[ line.find(':') +1 : line.find(',')]        
-        try: params[i_key] = float(i_value) 
-        except: params[i_key] = i_value
-    return params
+    else: # ask for confirmation about inputs 
 
-def determine_bonus_and_time(params): 
-    """ ideosyncratic script: calculates information to show in HIT description """ 
-    max_bonus = params['max_experiment_bonus']
-    max_time = np.ceil(  (params['n_trials'] * params['estimate_seconds_per_trial'])  /60)
-    return max_bonus, max_time
+        # get mturk setting --either 'sandbox' or 'live'
+        context =  sys.argv[1]
+        # get number of hits to submit 
+        n_hits = int(sys.argv[2])
+        # get compensation amound 
+        payment =  str(sys.argv[3])
+           
+        if (context == 'live') or (context == 'sandbox'):
+            
+            # print info for HIT
+            print('\nCreate %s %s HITs for $%s each?\n\t(enter either yes or no)\n'%(
+                str(n_hits), str(context), str(payment)))
+            # collect user confirmation
+            user_response = raw_input()
+            
+            # set mturk related parameters from user input (sandbox vs. live) 
+            if user_response[0].lower() == 'y':
+                pass # on to the next step 
+            else: 
+                sys.exit('\ncareful :)\n')
+     
+        else: 
+            sys.exit("\ncontext needs to be either 'live' or 'sandbox'\n")
+    
+    return context, n_hits, payment
 
-#############
-experiment_path = experiment_script  #set_path_to_experiment(experiment_script)
-#params = extract_values_from_params( os.path.join( os.path.realpath('.'), param_location)) 
-#params['max_bonus'], params['max_time'] = determine_bonus_and_time(params) 
+class experiment:
+    """
+    An object for constructing an External Question.
+    """
+    schema_url = "http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2006-07-14/ExternalQuestion.xsd"
+    template = '<ExternalQuestion xmlns="%(schema_url)s"><ExternalURL>%%(external_url)s</ExternalURL><FrameHeight>%%(frame_height)s</FrameHeight></ExternalQuestion>' % vars()
 
-print( experiment_path ) 
-# send info about inputs if they're aren't enough
-if len(sys.argv) < 3:
+    def __init__(self, external_url, frame_height):
+        self.external_url = external_url
+        self.frame_height = frame_height
 
-    sys.exit("""
-    usage for either sandbox or live:\n
-        $ python submit_hit.py sandbox <n_hits_per_task> <amount> 
-        $ python submit_hit.py live <n_hits_per_task> <amount>\n""")
+    def get_as_xml(self):
+        return self.template % vars(self)
 
-else: # make sure data are formated correctely, and we're in the right context
+def post_hits(hit_info, n_sub_hits, save_name):
+   
+    print(hit_info['platform']) 
+    # set platform to submit to 
+    if hit_info['platform'] == 'sandbox':
+        endpoint_url = 'https://mturk-requester-sandbox.us-east-1.amazonaws.com'
+        external_submit = 'https://workersandbox.mturk.com/mturk/externalSubmit'
+        base_url = 'https://workersandbox.mturk.com/mturk/preview?groupId='
+    elif hit_info['platform'] == 'live':
+        endpoint_url = 'https://mturk-requester.us-east-1.amazonaws.com'
+        external_submit = "https://www.mturk.com/mturk/externalSubmit"
+        base_url = 'https://www.mturk.com/mturk/preview?groupId='
 
-    # format user input
-    context =  sys.argv[1]
-    # task_identifier = sys.argv[2] 
-    n_hits = int(sys.argv[2])
-    compensation_amount =  str(sys.argv[3])
-        
-    if (context == 'live') or (context == 'sandbox'):
+    # open connection to mturk platform 
+    mturk = boto3.client('mturk', 
+            aws_access_key_id = access_id, 
+            aws_secret_access_key = secret_key, 
+            region_name='us-east-1',
+            endpoint_url = endpoint_url,
+            )
+    
+    # generate this human intelligence task (HIT) 
+    HIT = mturk.create_hit(
+            Question = experiment(hit_info['external_url'], hit_info['frame_height']).get_as_xml(), 
+            LifetimeInSeconds = hit_info['lifetime_of_experiment'], 
+            MaxAssignments = n_sub_hits, 
+            Title = hit_info['title'],
+            Description = hit_info['description'],
+            Keywords = hit_info['keywords'],
+            QualificationRequirements = hit_info['qualifications'],
+            Reward = hit_info['payment_for_experiment'], 
+            AssignmentDurationInSeconds= hit_info['duration_of_experiment'], 
+            AutoApprovalDelayInSeconds = hit_info['approval_delay'],  
+            RequesterAnnotation = hit_info['experiment_name'])
+    
+    # save the HIT ID for our records + to display 
+    hit_info['hit_id'] = HIT['HIT']['HITId']
+    # save full URL where the HIT can be found 
+    hit_info['hit_url'] = "{}{}".format(base_url, HIT['HIT']['HITTypeId'])
 
-        print('\nCreate %s %s HITs for $%s each?\n'%(str(n_hits), str(context), str(compensation_amount)))
-        print('\n(yes/no)\n')
-        try: user_response = raw_input()
-        except: user_response = raw_input()
-        if user_response[0].lower() != 'y':
-            sys.exit('\ncareful :)\n')
+    # we'll save this HIT info for our own records 
+    record_name = '%s_%s.npy'%(hit_info['platform'], save_name)
+    # if we've already used this name, load it
+    if record_name in os.listdir(os.getcwd()):
+        turk_info = np.load(record_name).item()
     else:
-        sys.exit("\ncontext needs to be either 'live' or 'sandbox'\n")
+        # create a new file, if name hasn't been used
+        turk_info = {}
+    # name this submission with a unique identifier
+    turk_info['submission_%d'%len(turk_info.keys())] = hit_info
+    # save this HIT for our own records
+    np.save(record_name, turk_info)
+    # print out the HIT URL on the command line 
+    print('HIT_ID:', HIT['HIT']['HITId'], "\nwhich you can see here:", hit_info['hit_url'])
 
-# set mturk dependencies
-if context == 'sandbox':
-
-    host = 'https://mturk-requester-sandbox.us-east-1.amazonaws.com'
-    base_url = 'https://workersandbox.mturk.com/mturk/preview?groupId='
-    external_submit = 'https://workersandbox.mturk.com/mturk/externalSubmit'
-
-elif context == 'live':
-
-    print('okay... this one is for real!\n')
-    host = 'https://mturk-requester.us-east-1.amazonaws.com'
-    base_url = 'https://www.mturk.com/mturk/preview?groupId='
-    external_submit = "https://www.mturk.com/mturk/externalSubmit"
-
-# load acces key information
-# key_info = np.load('snail_rootkey_may6.npy').item() 
-with open(credentials, 'rb') as aws_keys:
-    key_info = json.load(aws_keys)
-
-access_id = str(key_info['access_key_id'])
-secret_key = str(key_info['secret_access_key'])
-
-def generate_hit_info(context, compensation_amount, i_hits_per_subsubmission): 
+def generate_and_submit_hit(context, payment, n_hits, save_name): 
+    """Generates data to submit HIT + save record of the HIT to this folder"""
     
     hit_info = {} 
-    # mongo info 
-    #hit_info['database'] = params['database'] 
-    #hit_info['collection'] = params['collection'] 
-    #hit_info['iteration'] = params['iteration']
-    hit_info['time_of_submission'] = datetime.datetime.now().strftime("%H:%M_%m_%d_%Y")
-    hit_info['platform'] = context
     # mturk description info 
     hit_info['external_url'] = "https://stanfordmemorylab.com:%s"%(os.path.join(port_number, experiment_path)) 
-    keywords = ['perception', 'neuroscience', 'game', 'fun', 'experiment', 'research']
-    hit_info['keywords'] = ', '.join(keywords)
-    hit_info['description'] = 'An experiment on the relationship between perception and memory'  
-    hit_info['experiment_name'] = 'Perceptual-memory experiment'
-    hit_info['title'] = 'Ah, title!'# 'An experiment where you can earn up to $%.02f bonus in less than %d minutes!'%( params['max_bonus'], params['max_time'] + 1)  
+    hit_info['keywords'] = 'perception, reaction time  game, experiment, research'
+    hit_info['description'] = 'An experiment about how the brain processes information'  
+    hit_info['experiment_name'] = 'Reaction time experiment'
+    hit_info['title'] = 'Helping us learn about the brain!'
     # payment and bonus info
-    hit_info['payment_for_experiment'] = compensation_amount 
+    hit_info['payment_for_experiment'] = payment 
     # mturk interface and worker details 
-    hit_info['max_assignments'] = i_hits_per_subsubmission
+    hit_info['max_assignments'] = n_hits
     hit_info['frame_height'] = 700
     hit_info['approval_rating_cutoff'] = 90
     # experimental timing details -- time is in seconds, e.g: 60 * 60 = 1 hour
-    hit_info['lifetime_of_experiment'] = int( 60 * 60 * n_hours_to_accept_hit)
-    hit_info['duration_of_experiment'] = int( 60 * 60 * n_hours_to_complete_hit)
+    hit_info['lifetime_of_experiment'] = int( 60 * 60 * .2)
+    hit_info['duration_of_experiment'] = int( 60 * 60 * .2)
     hit_info['approval_delay'] = int(1 * 30)
+    # 
+    hit_info['time_of_submission'] = datetime.datetime.now().strftime("%H:%M_%m_%d_%Y")
+    hit_info['platform'] = context
 
-    # codes here: https://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_QualificationRequirementDataStructureArticle.html
+    # add qualifications to set who can complete this experiment
     qualification_requirements = [ 
             {
             'QualificationTypeId':"00000000000000000071",
@@ -142,70 +163,38 @@ def generate_hit_info(context, compensation_amount, i_hits_per_subsubmission):
             'RequiredToPreview': True, 
             }
         ]
-    
+    # save these qualifications 
     hit_info['qualifications'] = qualification_requirements 
+    # post this HIT on mturk    
+    post_hits(hit_info, n_hits_per_submission, save_name)   
+
+if __name__ == '__main__':
     
-    return hit_info 
+    # check that commands are in the right format and extract all experiment-related info
+    context, n_hits, payment = get_user_inputs()
+    # specify which port to open 
+    port_number = '8888'
+    # set path to experiment from open port 
+    experiment_path = 'index.html'
+    # name to save this HIT data to in this folder
+    save_name = 'submission_records'
+    # set path to your aws user "keys" 
+    credentials= '../../credentials/aws_keys.json'
+    # load your mturk-related "key" information
+    with open(credentials, 'rb') as aws_keys:
+        key_info = json.load(aws_keys)
+        access_id = str(key_info['access_key_id'])
+        secret_key = str(key_info['secret_access_key'])
 
-def post_hits(hit_info, n_sub_hits):
-   
-    mturk = boto3.client('mturk', 
-            aws_access_key_id = access_id, 
-            aws_secret_access_key = secret_key, 
-            region_name='us-east-1',
-            endpoint_url = host
-            )
-
-    # LEGACY FUNCTION -- CONVERT EVENTUALLY -- q.get_as_xml() is what makes this code work now 
-    q = ExternalQuestion(external_url = hit_info['external_url'],  frame_height=hit_info['frame_height'])
-    
-    the_HIT = mturk.create_hit(
-                          Question=q.get_as_xml(), # legacy code conversation
-                          LifetimeInSeconds = hit_info['lifetime_of_experiment'], 
-                          MaxAssignments = n_sub_hits, 
-                          Title = hit_info['title'],
-                          Description = hit_info['description'],
-                          Keywords = hit_info['keywords'],
-                          QualificationRequirements = hit_info['qualifications'],
-                          Reward = hit_info['payment_for_experiment'], 
-                          AssignmentDurationInSeconds= hit_info['duration_of_experiment'], 
-                          AutoApprovalDelayInSeconds = hit_info['approval_delay'],  
-                          RequesterAnnotation = hit_info['experiment_name']
-                          )
-
-    hit_info['hit_id'] = the_HIT['HIT']['HITId']
-    hit_url = "{}{}".format(base_url, the_HIT['HIT']['HITTypeId'])
-    hit_info['hit_url'] = hit_url
-
-
-    record_name = '%s_submission_records.npy'%(context)
-
-    if record_name not in os.listdir(os.getcwd()):
-      turk_info = {}
-    else: 
-      turk_info = np.load(record_name).item()
-
-    key_name = 'submission_%d'%len(turk_info.keys())
-    turk_info[key_name] = hit_info
-    np.save(record_name, turk_info)
-
-    print('HIT_ID:', the_HIT['HIT']['HITId'], "\nwhich you can see here:", hit_url)
-
-### make the magic happen
-max_hits = 9
-full_cycles = int(n_hits/max_hits)
-partial_cycle = n_hits%max_hits
-submissions = list(np.repeat(max_hits, full_cycles))
-if partial_cycle: submissions.append(partial_cycle)
-
-for n_hits_per_submission in submissions: 
-    
-    hit_info = generate_hit_info(context, compensation_amount, n_hits_per_submission)
-    print(hit_info) 
-    post_hits(hit_info, n_hits_per_submission)
-
-max_hits = 9
-full_cycles = int(n_hits/max_hits)
-partial_cycle = n_hits%max_hits
-submissions = list(np.repeat(max_hits, full_cycles))
-if partial_cycle: submissions.append(partial_cycle)
+    # mturk charges are larger when hits are submitted in batches > 9 
+    # https://requester.mturk.com/pricing 
+    # so let's set the maximum number of hits in a batch to be 9 
+    max_hits = 9
+    # and split up those max_hits submissions ... 
+    submissions = list(np.repeat(max_hits, n_hits//max_hits))
+    # into smaller batches that go up to but never exceed 9  
+    if n_hits%max_hits: submissions.append( n_hits%max_hits)
+    # now let's submit those batches one at a time
+    for n_hits_per_submission in submissions: 
+        # use command line data to generate and submit this HIT
+        generate_and_submit_hit(context, payment, n_hits_per_submission, save_name)
