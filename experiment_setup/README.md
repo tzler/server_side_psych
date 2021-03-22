@@ -13,4 +13,3 @@ In `server_setup/` we walk through how to set up a server, with the necessary se
 - `mturk_demo` integrates the read-write functionality from `hello_world` within the`jsPsych_demo` framework in redirect mturk participants that have completed your task multiple times.
 
 These examples are designed with both pedigogy and practicality in mind. Hopefully, working this will provide an extensible framework for your own experimental and scientific needs :) 
-

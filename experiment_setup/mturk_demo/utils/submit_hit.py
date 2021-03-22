@@ -1,26 +1,19 @@
 """
-Take user inputs (platform, n_hits, payment) to generate a new hits in batches of less than 10. 
+Automatically submit experiments (i.e. Human Intelligence Tasks, or "HITs") to Amazon Mechanical Turk. 
 
-Useful references for the code used to generate this scrip: 
-    General format for boto3 mturk interface
-    - https://github.com/aws-samples/mturk-code-samples/blob/master/Python/CreateHitSample.py
-    Creating the experiment from an "external question"--i.e. just sending participants to the website on our server
-    - https://stackoverflow.com/questions/46692234/how-to-submit-mechanical-turk-externalquestions-with-boto3
-    Qualifications formatting examples/guidelines
-    - https://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_QualificationRequirementDataStructureArticle.html
+To prototype/troubleshoot experiments in the "sandbox" use the following arguments from the command line: 
+    $ python3 submit_hit.py sandbox <n_hits_per_task> <amount>
+
+To submit HITs as experiments online that *other people* complete use the following command:  
+    $ python3 submit_hit.py live <n_hits_per_task> <amount>)
 
 """
-from __future__ import print_function
-import boto3
-from dateutil.parser import *
-import numpy as np
-import sys, os, datetime 
-import json, math
+import sys, os, datetime, json, boto3
 
 def get_user_inputs(): 
 
     # check input from command line
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 4:
         # if no enough arguments, send info about calling this function
         sys.exit("""
         usage for either sandbox or live:\n
@@ -30,20 +23,19 @@ def get_user_inputs():
     else: # ask for confirmation about inputs 
 
         # get mturk setting --either 'sandbox' or 'live'
-        context =  sys.argv[1]
+        context = sys.argv[1]
         # get number of hits to submit 
         n_hits = int(sys.argv[2])
         # get compensation amound 
-        payment =  str(sys.argv[3])
-           
+        payment =  format(float(sys.argv[3]), '.02f')        
+
         if (context == 'live') or (context == 'sandbox'):
             
             # print info for HIT
-            print('\nCreate %s %s HITs for $%s each?\n\t(enter either yes or no)\n'%(
+            print('\nCreate %s %s Human Intelligence Tasks (i.e. HITs) for $%s each? (enter either yes or no)\n'%(
                 str(n_hits), str(context), str(payment)))
             # collect user confirmation
-            user_response = raw_input()
-            
+            user_response = str(input())
             # set mturk related parameters from user input (sandbox vs. live) 
             if user_response[0].lower() == 'y':
                 pass # on to the next step 
@@ -57,7 +49,9 @@ def get_user_inputs():
 
 class experiment:
     """
-    An object for constructing an External Question.
+    An object for constructing an "External Question" 
+    i.e. we want to relay online participants from mturk's servers to our servers
+    code from https://stackoverflow.com/questions/46692234/how-to-submit-mechanical-turk-externalquestions-with-boto3
     """
     schema_url = "http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2006-07-14/ExternalQuestion.xsd"
     template = '<ExternalQuestion xmlns="%(schema_url)s"><ExternalURL>%%(external_url)s</ExternalURL><FrameHeight>%%(frame_height)s</FrameHeight></ExternalQuestion>' % vars()
@@ -70,8 +64,10 @@ class experiment:
         return self.template % vars(self)
 
 def post_hits(hit_info, n_sub_hits, save_name):
+    """General format for boto3 mturk interface
+    - https://github.com/aws-samples/mturk-code-samples/blob/master/Python/CreateHitSample.py
+    """
    
-    print(hit_info['platform']) 
     # set platform to submit to 
     if hit_info['platform'] == 'sandbox':
         endpoint_url = 'https://mturk-requester-sandbox.us-east-1.amazonaws.com'
@@ -110,17 +106,19 @@ def post_hits(hit_info, n_sub_hits, save_name):
     hit_info['hit_url'] = "{}{}".format(base_url, HIT['HIT']['HITTypeId'])
 
     # we'll save this HIT info for our own records 
-    record_name = '%s_%s.npy'%(hit_info['platform'], save_name)
+    record_name = '%s_%s.txt'%(hit_info['platform'], save_name)
     # if we've already used this name, load it
     if record_name in os.listdir(os.getcwd()):
-        turk_info = np.load(record_name).item()
+        with open(record_name) as json_file: 
+            turk_info = json.load(json_file)
     else:
         # create a new file, if name hasn't been used
         turk_info = {}
     # name this submission with a unique identifier
     turk_info['submission_%d'%len(turk_info.keys())] = hit_info
     # save this HIT for our own records
-    np.save(record_name, turk_info)
+    with open(record_name, 'w') as outfile: 
+        json.dump(turk_info, outfile)
     # print out the HIT URL on the command line 
     print('HIT_ID:', HIT['HIT']['HITId'], "\nwhich you can see here:", hit_info['hit_url'])
 
@@ -149,6 +147,10 @@ def generate_and_submit_hit(context, payment, n_hits, save_name):
     hit_info['platform'] = context
 
     # add qualifications to set who can complete this experiment
+    """ 
+    Qualifications formatting examples/guidelines: 
+    - https://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_QualificationRequirementDataStructureArticle.html
+    """
     qualification_requirements = [ 
             {
             'QualificationTypeId':"00000000000000000071",
@@ -166,7 +168,7 @@ def generate_and_submit_hit(context, payment, n_hits, save_name):
     # save these qualifications 
     hit_info['qualifications'] = qualification_requirements 
     # post this HIT on mturk    
-    post_hits(hit_info, n_hits_per_submission, save_name)   
+    post_hits(hit_info, n_hits, save_name)   
 
 if __name__ == '__main__':
     
@@ -178,6 +180,7 @@ if __name__ == '__main__':
     experiment_path = 'index.html'
     # name to save this HIT data to in this folder
     save_name = 'submission_records'
+    
     # set path to your aws user "keys" 
     credentials= '../../credentials/aws_keys.json'
     # load your mturk-related "key" information
@@ -191,10 +194,11 @@ if __name__ == '__main__':
     # so let's set the maximum number of hits in a batch to be 9 
     max_hits = 9
     # and split up those max_hits submissions ... 
-    submissions = list(np.repeat(max_hits, n_hits//max_hits))
+    submissions = [max_hits for i in range(n_hits//max_hits)]
     # into smaller batches that go up to but never exceed 9  
     if n_hits%max_hits: submissions.append( n_hits%max_hits)
+    
     # now let's submit those batches one at a time
-    for n_hits_per_submission in submissions: 
+    for n_per_submission in submissions: 
         # use command line data to generate and submit this HIT
-        generate_and_submit_hit(context, payment, n_hits_per_submission, save_name)
+        generate_and_submit_hit(context, payment, n_per_submission, save_name)
