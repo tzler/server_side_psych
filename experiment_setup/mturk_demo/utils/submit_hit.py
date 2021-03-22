@@ -122,7 +122,7 @@ def post_hits(hit_info, n_sub_hits, save_name):
     # print out the HIT URL on the command line 
     print('HIT_ID:', HIT['HIT']['HITId'], "\nwhich you can see here:", hit_info['hit_url'])
 
-def generate_and_submit_hit(context, payment, n_hits, save_name): 
+def generate_and_submit_hit(params, n_hits, save_name): 
     """Generates data to submit HIT + save record of the HIT to this folder"""
     
     hit_info = {} 
@@ -133,19 +133,18 @@ def generate_and_submit_hit(context, payment, n_hits, save_name):
     hit_info['experiment_name'] = 'Reaction time experiment'
     hit_info['title'] = 'Helping us learn about the brain!'
     # payment and bonus info
-    hit_info['payment_for_experiment'] = payment 
+    hit_info['payment_for_experiment'] = params['payment'] 
     # mturk interface and worker details 
     hit_info['max_assignments'] = n_hits
     hit_info['frame_height'] = 700
     hit_info['approval_rating_cutoff'] = 90
     # experimental timing details -- time is in seconds, e.g: 60 * 60 = 1 hour
-    hit_info['lifetime_of_experiment'] = int( 60 * 60 * .2)
-    hit_info['duration_of_experiment'] = int( 60 * 60 * .2)
+    hit_info['lifetime_of_experiment'] = int( 60 * 60 * params['experiment_lifetime'])
+    hit_info['duration_of_experiment'] = int( 60 * 60 * params['experiment_duration'])
     hit_info['approval_delay'] = int(1 * 30)
     # 
     hit_info['time_of_submission'] = datetime.datetime.now().strftime("%H:%M_%m_%d_%Y")
-    hit_info['platform'] = context
-
+    hit_info['platform'] = params['platform']
     # add qualifications to set who can complete this experiment
     """ 
     Qualifications formatting examples/guidelines: 
@@ -171,9 +170,11 @@ def generate_and_submit_hit(context, payment, n_hits, save_name):
     post_hits(hit_info, n_hits, save_name)   
 
 if __name__ == '__main__':
-    
+   
+    # define the 'lifetime' and 'duration' of the experiment on mturk (in hours)
+    params = {'experiment_lifetime':.1, 'experiment_duration':.1}
     # check that commands are in the right format and extract all experiment-related info
-    context, n_hits, payment = get_user_inputs()
+    params['platform'], n_hits, params['payment'] = get_user_inputs()
     # specify which port to open 
     port_number = '8888'
     # set path to experiment from open port 
@@ -201,4 +202,4 @@ if __name__ == '__main__':
     # now let's submit those batches one at a time
     for n_per_submission in submissions: 
         # use command line data to generate and submit this HIT
-        generate_and_submit_hit(context, payment, n_per_submission, save_name)
+        generate_and_submit_hit(params, n_per_submission, save_name)

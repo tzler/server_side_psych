@@ -75,21 +75,23 @@ Once you have your `access_key_id` and your `secret_access_key`, go into the `cr
 
 When you're done, you should have the following file at the following location: `server_side_psych/experiment_setup/credentials/aws_keys.json`.
 
-### _Optional, but helpful for debugging:_ 
+### _Code that's going to be useful for debugging:_ 
 
 Now, the functionality of the server here will be to redirect participants that have already encoutered the experiment using each participants worker ID. This means it will also prohibit you from viewing the experiment more than once. Because you'll typically be troubleshooting your code before launching it in the "sandbox", we've made sure that you can give yourself the ability to see the experiment multiple times. To do this, you'll need to know your mturk `workerId`. (If you don't know your workerId, it's in the upper left-hand corner of the browser when you're logged onto the sandbox.) 
 
-If you'd like this option, you can save a file in the credentials folder that contains _only_ your workerId--no quotes, no labels. The file should be named `my_worker_id` and look like this:
+You can save a file in the `credentials/` folder that contains _only_ your workerId--no quotes, no labels. The file should be named `my_worker_id` and look like this:
 
 ```
 A33F2FVXMGJDMM
 ```
 
+When you're done, you should have the following file at the following location: `server_side_psych/experiment_setup/credentials/my_worker_id`.
+
 ## Verifying participation by quering the database with "workerId" 
 
 Great. Let's reiterate our general idea: Each time someone opts in to perform your experiment, you check whether they have already participanted in this study; if they _haven't_, the experiment proceeds as normal, if they _have_ they get redirected to an explanation of why they aren't allowed to participate. We'll use a unique identifier that each participant has on mturk---their `workerId`---throughout this process.
 
-How we can evaluate whether someone has previously participanted in this experiment? This is done mostely on the server with node in `app.js`. Here we'll just sketch out the approach and leave you to go through this in detail on your own time; when you want to get more into the details, you can look over the line-by-line comments in `app.js` to talk you through each step. 
+How can evaluate whether someone has previously participanted in this experiment? This is done mostely on the server with node in `app.js`. Here we'll just sketch out the approach and leave you to go through this in detail on your own time; when you're ready to get into the specifics, you can look over the line-by-line comments in `app.js` to talk you through each step. 
 
 There's really one, high-level difference between this `app.js` file and the one in previous demos. Previously, every document that each client (i.e. each experimental participant, via their web browser) requests from the server was "served" to them (i.e. data on the server was sent to their browser). In this section we introduce a protocol that, before "serving" any files to the client, asks "Has this participant been here before?" This protocol begins in `app.js:46-49`: 
 
@@ -101,9 +103,11 @@ app.get('/*', function (req, res) {
 });
 ```
 
-Here, `initialization():129` first checks whether there is a worker ID. This will only happen with two conditions are met: The participant is viewing this experiment on mturk _and_ they have "accepted the HIT" (i.e. have chosen to complete the experiment). If these conditions aren't met (e.g. someone hasn't accepted the HIT, or they're not on mturk), all the files are served to the participant with `serve_file()`. Of course there are more restrictive ways to do this (e.g. prevent participants from viewing even a _single trial_ before they've accepted the HIT), but we woudn't recommend those without substantially changing this experimental design. As is, restricting participants from seeing even a single trial doesn't give them a chance to see what the experiment is about, which---given mturk and requester's generally abusive labor practices---borders on unethical. 
+When `initialization():129` is defined below, this function first checks whether there is a worker ID. This will only happen with two conditions are met: The participant is viewing this experiment on mturk _and_ they have "accepted the HIT" (i.e. have chosen to complete the experiment). If these conditions aren't met (e.g. someone hasn't accepted the HIT, or they're not on mturk), all the files are served to the participant with `serve_file()`. 
 
-If the server detects an mturk worker ID, and it checks whether they have already performed this experiment `get_previous_participation():169`: this function searches within the given database and collection for any instance of this participants worker ID. If their worker ID is not found, they are again allowed to proceed. If their worker ID is found, `handle_duplicate():169` redirects the participant to a different page where they are informed why they won't be able to complete this HIT, reminded that they can reach out to the experimenter if they believe they have been brought here in error, and kindly instructed to "return the HIT" so that other participants can complete this experiment.
+_`ETHICAL NOTE`_ On mturk, you're not just a scientist, you're also an employer. People depend on this as a source of income: it's work. How you design your experiments should respect this fact. In this specific moment, that means that we do everything we can to let people know what the experiment (i.e. their working conditions) is going to be like. This let's them freely consent to participante. And so while we _could_ design the server to only show subjects example stimuli _after_ they have accepted the HIT (i.e. the first see the stimuli when they're in the experiment) this design can be coercive,[especially considering the balance of power between participants and experimentalists](https://www.theatlantic.com/business/archive/2018/01/amazon-mechanical-turk/551192/). We strongly discourage this approach. 
+
+If the server detects an mturk worker ID, it checks whether they have already performed this experiment using `get_previous_participation():169`. This function searches within the given database and collection for any instance of this participants worker ID. If their worker ID is not found, they are again allowed to proceed---that is, they are served all the files they request. If their worker ID is found, `handle_duplicate():169` redirects the participant to a different page. Here, they are informed why they won't be able to complete this HIT, reminded that they can reach out to the experimenter if they believe they have been brought here in error, and kindly instructed to "return the HIT" so that other participants can complete this experiment.
 
 ## Collecting and saving MTURK-related information across the experiment. 
 
@@ -116,7 +120,7 @@ data.hit_id= get_turk_param('hitId')
 save_trial_to_database(data)
 ```
 
-Additionally, we've got to send a signal back to mturk when subjects have completed the experiment. Again, calling functions in `mturk_functions.js` we can accomplish this with just a single well positioned line of code in  `task.js:109`, displaying  mturk's "Submit" button at the end of the experiment: 
+Additionally, we've got to send a signal back to mturk when subjects have completed the experiment. For participants, this is the single most important thing in our experiment---it makes sure they are able to get paid! Again, calling functions in `mturk_functions.js` we can accomplish this with just a single well positioned line of code in  `task.js:109`, displaying  mturk's "Submit" button at the end of the experiment by just adding `show_mturk_bottom()` within jsPsych's `on_finish()` function: 
 
 ```
 jsPsych.init({
@@ -127,11 +131,11 @@ jsPsych.init({
 })
 ```
 
-Because we've factored out the mturk and socket functions, adding these several lines of code is all you need to do to make any javascript-based experiments compatible with the server-side resources we've been developing, and now the mturk compatibility. 
+Because we've factored out the mturk and socket functions, adding these several lines of code is all you need to do to make _any_ javascript-based experiments compatible with the server-side resources we've been developing, and now the mturk compatibility.  
 
 ### Setting up your python environment :snake: 
 
-We're going to use python to submit our experiment to mturk. So let's set up our python environment to make this easy for us. 
+It's possible to manually submit HITs to mturk, but it's error prone and tedious. So we're going to automate this process, using python from the command line instead. Let's start by setting up our python environment to make this easy for us.
 
 First, let's just make sure that our global environment is up to date
 
@@ -147,7 +151,7 @@ $ sudo apt -y upgrade
 
 If you're asked any questions about which settings to use, just enter `N`. 
 
-Now we're going to need to install a package that will let us submit experiments to mturk. Let's use `pip` for this installation. First, we'll need to install pip, which we can take care of with the following command: 
+Now we're going to need to install a package that will let us submit experiments to mturk. Let's use `pip` for this installation. But we'll need to install pip first. We can take care of with the following command: 
 
 ```
 $ sudo apt install -y python3-pip
@@ -163,17 +167,18 @@ Now we should be ready to submit our experiment to mturk--i.e. post it online :)
 
 ## Submiting experiments to MTURK
 
+We're going to use the following script to submit HITs: `server_side_psych/experiment_setup/mturk_demo/submit_hit.py`. The only thing this script needs you to do is what's been outlined above (generating the `aws_keys.json` and `my_work_id` files in the `credentials/` folder). There are a _looooot_ of details in this script; you can ignore them all for now, but if you'd like to adopt this approach there are line-by-line comments throughout which should be helpful.  
 
-TI you want to submit 3 sandbox HITs at 7$ each, for example, just run the following code in `utils/': 
-
-```
-$ python3 submit_hit.py sandbox 3 7
-```
-
-It wil ask you to confirm 
+We call this script from the command line by passing it arguments in the following way: if we want to submit 5 HITS (i.e. have 5 people complete this experiment) and pay them each 10$, then we would use the following command: 
 
 ```
-Create 3 sandbox HITs for $7 each?
+$ python3 submit_hit.py sandbox 5 10
+```
+
+Notice that we're using `python*3*`. It wil ask you to confirm: 
+
+```
+Create 5 sandbox HITs for $10 each?
 
 
 (yes/no)
